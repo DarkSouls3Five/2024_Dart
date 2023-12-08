@@ -1,0 +1,14 @@
+.\dart\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/croutine.c
+.\dart\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+.\dart\croutine.o: E:\MDK528\ARM\ARMCC\Bin\..\include\stddef.h
+.\dart\croutine.o: E:\MDK528\ARM\ARMCC\Bin\..\include\stdint.h
+.\dart\croutine.o: ../Inc/FreeRTOSConfig.h
+.\dart\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+.\dart\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+.\dart\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+.\dart\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
+.\dart\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+.\dart\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
+.\dart\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
+.\dart\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/croutine.h
+.\dart\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h

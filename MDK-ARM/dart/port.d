@@ -1,0 +1,12 @@
+.\dart\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
+.\dart\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+.\dart\port.o: E:\MDK528\ARM\ARMCC\Bin\..\include\stddef.h
+.\dart\port.o: E:\MDK528\ARM\ARMCC\Bin\..\include\stdint.h
+.\dart\port.o: ../Inc/FreeRTOSConfig.h
+.\dart\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+.\dart\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+.\dart\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+.\dart\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
+.\dart\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+.\dart\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
+.\dart\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h

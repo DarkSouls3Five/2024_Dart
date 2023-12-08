@@ -1,0 +1,15 @@
+.\dart\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/timers.c
+.\dart\timers.o: E:\MDK528\ARM\ARMCC\Bin\..\include\stdlib.h
+.\dart\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+.\dart\timers.o: E:\MDK528\ARM\ARMCC\Bin\..\include\stddef.h
+.\dart\timers.o: E:\MDK528\ARM\ARMCC\Bin\..\include\stdint.h
+.\dart\timers.o: ../Inc/FreeRTOSConfig.h
+.\dart\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+.\dart\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+.\dart\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+.\dart\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
+.\dart\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+.\dart\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
+.\dart\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
+.\dart\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
+.\dart\timers.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h
