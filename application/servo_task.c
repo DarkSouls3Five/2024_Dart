@@ -24,8 +24,8 @@
 #include "runner_task.h"
 #include "fric_task.h"
 
-#define SERVO_PULL_PWM   1100
-#define SERVO_PUSH_PWM   1950
+#define SERVO_PULL_PWM   1850
+#define SERVO_PUSH_PWM   1000
 
 
 
@@ -51,6 +51,7 @@ void servo_task(void const * argument)
 
     while(1)
     {
+			servo_set_mode();
 			if (servo_mode == SERVO_PUSH)	
 			{
 				servo_pwm_set(SERVO_PUSH_PWM,1);
@@ -67,14 +68,19 @@ void servo_task(void const * argument)
 
 void servo_set_mode()
 {
-	if (switch_is_mid(RC_data->rc.s[1]) && last_servo_mode == SERVO_PULL && get_fric_mode() == FRIC_ON && get_runner_mode() == RUNNER_READY)
+	//if (switch_is_mid(RC_data->rc.s[1]) && last_servo_mode == SERVO_PULL && get_fric_mode() == FRIC_ON && get_runner_mode() == RUNNER_READY)
+	if (switch_is_mid(RC_data->rc.s[1]) && last_servo_mode == SERVO_PULL && get_fric_mode() == FRIC_ON)
 	{
-		if (RC_data->rc.ch[2] < 600)
+		if (RC_data->rc.ch[2] < -600)
 		{
 			vTaskDelay(1000);
-			if (RC_data->rc.ch[2] < 600)
+			if (RC_data->rc.ch[2] < -600)
 				servo_mode = SERVO_PUSH;
+			else
+				servo_mode = SERVO_PULL;
 		}
+		else
+			servo_mode = SERVO_PULL;
 	}
 	else 
 		servo_mode = SERVO_PULL;

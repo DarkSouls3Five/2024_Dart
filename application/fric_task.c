@@ -113,12 +113,14 @@ void fric_task(void const * argument)
 
         //fric control pid calculate
         //???????PID????
-				if(count_j == 10)
+			
+			if(count_j == 10)
 				{
 					debug_send(fric_act.motor_data[0].speed,fric_act.motor_data[1].speed,fric_act.motor_data[2].speed ,
 										fric_act.motor_data[3].speed,fric_act.motor_data[4].speed,fric_act.motor_data[5].speed);
 					count_j = 0;
 				}
+			
 				fric_control_loop(&fric_act);
 				count_j++;
 				vTaskDelay(FRIC_CONTROL_TIME_MS);

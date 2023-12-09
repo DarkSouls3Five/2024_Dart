@@ -10,4 +10,5 @@ typedef enum
 
 extern void servo_task(void const * argument);
 extern servo_mode_e servo_mode, last_servo_mode;
+void servo_set_mode(void);
 #endif
