@@ -59,6 +59,7 @@ osThreadId GpioTaskHandle;
 osThreadId FricTaskHandle;
 osThreadId RunnerTaskHandle;
 osThreadId LedFlowTaskHandle;
+osThreadId GimbalTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -71,6 +72,7 @@ void gpio_task(void const * argument);
 void fric_task(void const * argument);
 void runner_task(void const * argument);
 void led_RGB_flow_task(void const * argument);
+void gimbal_task(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -146,16 +148,20 @@ void MX_FREERTOS_Init(void) {
   GpioTaskHandle = osThreadCreate(osThread(GpioTask), NULL);
 
   /* definition and creation of FricTask */
-  osThreadDef(FricTask, fric_task, osPriorityNormal, 0, 512);
+  osThreadDef(FricTask, fric_task, osPriorityNormal, 0, 128);
   FricTaskHandle = osThreadCreate(osThread(FricTask), NULL);
 
   /* definition and creation of RunnerTask */
-  osThreadDef(RunnerTask, runner_task, osPriorityNormal, 0, 512);
+  osThreadDef(RunnerTask, runner_task, osPriorityNormal, 0, 128);
   RunnerTaskHandle = osThreadCreate(osThread(RunnerTask), NULL);
 
   /* definition and creation of LedFlowTask */
   osThreadDef(LedFlowTask, led_RGB_flow_task, osPriorityNormal, 0, 128);
   LedFlowTaskHandle = osThreadCreate(osThread(LedFlowTask), NULL);
+
+  /* definition and creation of GimbalTask */
+  osThreadDef(GimbalTask, gimbal_task, osPriorityNormal, 0, 128);
+  GimbalTaskHandle = osThreadCreate(osThread(GimbalTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -270,6 +276,24 @@ __weak void led_RGB_flow_task(void const * argument)
     osDelay(1);
   }
   /* USER CODE END led_RGB_flow_task */
+}
+
+/* USER CODE BEGIN Header_gimbal_task */
+/**
+* @brief Function implementing the GimbalTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_gimbal_task */
+__weak void gimbal_task(void const * argument)
+{
+  /* USER CODE BEGIN gimbal_task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END gimbal_task */
 }
 
 /* Private application code --------------------------------------------------*/

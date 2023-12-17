@@ -696,11 +696,6 @@
               <FilePath>..\application\remote_control.c</FilePath>
             </File>
             <File>
-              <FileName>fric_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\fric_task.c</FilePath>
-            </File>
-            <File>
               <FileName>runner_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\runner_task.c</FilePath>
@@ -709,6 +704,16 @@
               <FileName>debug.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\debug.c</FilePath>
+            </File>
+            <File>
+              <FileName>fric_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\fric_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>gimbal_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\gimbal_task.c</FilePath>
             </File>
           </Files>
         </Group>

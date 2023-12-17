@@ -21,6 +21,8 @@
 #include "CAN_bus.h"
 #include "remote_control.h"
 #include "user_lib.h"
+#include "gimbal_task.h"
+
 
 double fabs(double a)
 {
@@ -76,7 +78,7 @@ static void runner_feedback_update(runner_act_t *runner_act_init);
   * @param[out]     runner_act_control:"runner_act"???????.
   * @retval         none
   */
-static void runner_control_loop(runner_act_t *runner_act_control);
+static void runner_control_loop(runner_act_t *runner_act_control,gimbal_act_t *gimbal_act_control);
 /**
   * @brief          "gimbal_control" valiable initialization, include pid initialization, remote control data point initialization, gimbal motors
   *                 data point initialization, and gyro sensor angle point initialization.
@@ -92,7 +94,7 @@ static void runner_PID_init(runner_PID_t *pid, fp32 maxout, fp32 max_iout, fp32 
 static fp32 runner_PID_calc(runner_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
 
 runner_act_t runner_act;
-
+extern gimbal_act_t gimbal_act;
 /**
   * @brief          runner_task
   * @param[in]      pvParameters: NULL
@@ -115,7 +117,7 @@ void runner_task(void const * argument)
     {
 			runner_set_mode(&runner_act);                    //???????????g?
       runner_feedback_update(&runner_act);            //??????????
-      runner_control_loop(&runner_act);
+      runner_control_loop(&runner_act,&gimbal_act);
 			vTaskDelay(RUNNER_CONTROL_TIME_MS);
 			runner_act.last_runner_mode = runner_act.runner_mode;
 			
@@ -189,6 +191,7 @@ static void runner_set_mode(runner_act_t *runner_act_mode)
 			else if (switch_is_down(runner_act_mode->RC_data->rc.s[1]) && runner_act_mode->last_runner_mode == RUNNER_REACH)
 			{
 				runner_act_mode->runner_mode = RUNNER_READY;
+				runner_act_mode->runner_mode = RUNNER_READY;
 			}
 			
 		}
@@ -227,7 +230,8 @@ static void runner_feedback_update(runner_act_t *runner_act_update)
   * @param[out]     runner_act_control:"runner_act"???????.
   * @retval         none
   */
-static void runner_control_loop(runner_act_t *runner_act_control)
+
+static void runner_control_loop(runner_act_t *runner_act_control,gimbal_act_t *gimbal_act_control)
 {
 	if (runner_act_control->runner_mode == RUNNER_DOWN)
 		{
@@ -244,7 +248,7 @@ static void runner_control_loop(runner_act_t *runner_act_control)
 																											runner_act_control->motor_data.motor_angle_set, 
 																											runner_act_control->motor_data.motor_speed);
 		runner_act_control->motor_data.give_current = (int16_t)PID_calc(&runner_act_control->runner_speed_pid, runner_act_control->motor_data.motor_speed, runner_act_control->motor_data.motor_speed_set);
-		if (runner_act_control->runner_mode != RUNNER_REACH || runner_act_control->runner_mode != RUNNER_READY)
+		if (runner_act_control->runner_mode != RUNNER_REACH && runner_act_control->runner_mode != RUNNER_READY)
 			runner_act_control->runner_mode = RUNNER_TURNING;
 	}
 
@@ -253,8 +257,8 @@ static void runner_control_loop(runner_act_t *runner_act_control)
 		fabs(runner_act_control->motor_data.motor_speed) < SPEED_READY)
 		runner_act_control->runner_mode = RUNNER_REACH;
 	
-	CAN_cmd_runner(0,runner_act_control->motor_data.give_current,0);
-		
+	CAN_cmd_can2(gimbal_act_control->motor_data.give_current,runner_act_control->motor_data.give_current,0);
+
 }
 
 

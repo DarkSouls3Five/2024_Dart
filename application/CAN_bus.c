@@ -35,6 +35,8 @@ static uint8_t              fric_right_can_send_data[8];
 static CAN_TxHeaderTypeDef  fric_right_tx_message;
 static uint8_t              runner_can_send_data[8];
 static CAN_TxHeaderTypeDef  runner_tx_message;
+static uint8_t              gimbal_can_send_data[8];
+static CAN_TxHeaderTypeDef  gimbal_tx_message;
 
 
 /*
@@ -240,11 +242,11 @@ void CAN_cmd_fricr(int16_t motor1, int16_t motor2, int16_t motor3)
   * @retval         none
   */
 /**
-* @brief            发送右摩擦轮电机电机控制电流(0x205,0x206,0x207)
+* @brief            发送装填电机电机控制电流(0x205,0x206,0x207)
   * @param[in]      motor: (0x205)(0x206)(0x207) 3508电机控制电流, 范围 [-16384,16384]
   * @retval         none
   */
-void CAN_cmd_runner(int16_t motor1, int16_t motor2, int16_t motor3)
+void CAN_cmd_can2(int16_t motor1, int16_t motor2, int16_t motor3)
 {
     uint32_t send_mail_box;
     runner_tx_message.StdId = CAN_TX_REAR_ID;
@@ -262,6 +264,8 @@ void CAN_cmd_runner(int16_t motor1, int16_t motor2, int16_t motor3)
     runner_can_send_data[7] = 0X00;
     HAL_CAN_AddTxMessage(&hcan2, &runner_tx_message, runner_can_send_data, &send_mail_box);
 }
+
+
 
 /**
   * @brief          return the motor data point

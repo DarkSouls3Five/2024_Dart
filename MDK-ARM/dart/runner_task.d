@@ -57,3 +57,4 @@
 .\dart\runner_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 .\dart\runner_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 .\dart\runner_task.o: ../components/algorithm/user_lib.h
+.\dart\runner_task.o: ..\application\gimbal_task.h
