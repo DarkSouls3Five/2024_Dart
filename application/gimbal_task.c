@@ -5,7 +5,7 @@
   * @note       
   * @history
   *  Version    Date            Author          Modification
-  *  V1.0.0     Oct-15-2023     Cherryblossomnight              1. done
+  *  V1.0.3     Dec-18-2023     Ignis              1. done
   *
   @verbatim
   ==============================================================================
@@ -233,11 +233,11 @@ static void gimbal_control_loop(gimbal_act_t *gimbal_act_control)
 
 
 /*
-  * @brief          云台不同控制模式对应函数，分别为自由状态、遥控器调整状态、锁死状态
+  * @brief          云台不同控制模式对应控制函数，分别为自由状态、遥控器调整状态、锁死状态
   * @param[out]     gimbal_init:"gimbal_control"???????.
   * @retval         none
 */
-//FREE
+//FREE模式
 void gimbal_free_control(gimbal_act_t *gimbal_act_free)
 {
 	if(gimbal_act_free == NULL)
@@ -248,7 +248,7 @@ void gimbal_free_control(gimbal_act_t *gimbal_act_free)
 	gimbal_act_free->motor_data.give_current = 0;
 }
 
-//RC_CONTROL
+//CONTROL模式
 void gimbal_rc_control(gimbal_act_t *gimbal_act_rc)
 {
 	if(gimbal_act_rc == NULL)
@@ -257,7 +257,7 @@ void gimbal_rc_control(gimbal_act_t *gimbal_act_rc)
 	}
 	static int16_t yaw_channel = 0;
 	
-	rc_deadband_limit(gimbal_act_rc->RC_data->rc.ch[2], yaw_channel, 0);
+	rc_deadband_limit(gimbal_act_rc->RC_data->rc.ch[2], yaw_channel, 0);//遥控器死区，为提高微调灵敏度此处设为0
 	
 	
 	if(gimbal_act_rc->motor_data.gimbal_motor_measure->ecd>MAX_GIMBAL&&yaw_channel>0)//电控限幅，判断是否大于最大值
@@ -274,57 +274,16 @@ void gimbal_rc_control(gimbal_act_t *gimbal_act_rc)
 	//pid计算发送电流
 		gimbal_current_calc(gimbal_act_rc);
 	
-	
-	/*增量式控制，没什么用，别管
-	gimbal_act_rc->motor_data.relative_angle_set = yaw_channel*YAW_RC_COEFF;
-	if(gimbal_act_rc->motor_data.gimbal_motor_measure->ecd>MAX_GIMBAL&&gimbal_act_rc->motor_data.relative_angle_set>0)//电控限幅
-	{
-		gimbal_act_rc->motor_data.relative_angle_set = 0;
-	}
-	else if(gimbal_act_rc->motor_data.gimbal_motor_measure->ecd<MIN_GIMBAL&&gimbal_act_rc->motor_data.relative_angle_set<0)//电控限幅
-	{
-		gimbal_act_rc->motor_data.relative_angle_set = 0;
-	}
-
-	cal_from_detla_to_current(gimbal_act_rc);
-	*/
 }
 
-//LOCKED
+//LOCKED模式
 void gimbal_locked_control(gimbal_act_t *gimbal_act_locked)
 {
 	if(gimbal_act_locked == NULL)
 	{
 		return;
-	}
-/*	
-	//锁定模式判断
-	if (gimbal_act_locked->RC_data->rc.ch[3] > 600)					//左摇杆向前推维持1s，归中
-	{
-		vTaskDelay(1000);
-		if (gimbal_act_locked->RC_data->rc.ch[3] > 600)
-		{
-			gimbal_act_locked->motor_data.motor_angle_set = MIDDLE_ANGLE;
-		}
-	}
-	else if (gimbal_act_locked->RC_data->rc.ch[2] > 600)					//左摇杆向右推维持1s，瞄准基地
-	{
-		vTaskDelay(1000);
-		if (gimbal_act_locked->RC_data->rc.ch[2] > 600)
-		{
-			gimbal_act_locked->motor_data.motor_angle_set = OUTPOST_ANGLE;
-		}
-	}
-	else if (gimbal_act_locked->RC_data->rc.ch[2] < -600)					//左摇杆向左推维持1s，瞄准前哨站
-	{
-		vTaskDelay(1000);
-		if (gimbal_act_locked->RC_data->rc.ch[2] < -600)
-		{
-			gimbal_act_locked->motor_data.motor_angle_set = FOUNDATION_ANGLE;
-		}
 	}		
-*/		
-	//pid计算发送电流
+	
 		//pid计算发送电流
 		gimbal_current_calc(gimbal_act_locked);
 }

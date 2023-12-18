@@ -665,6 +665,11 @@
               <FileType>1</FileType>
               <FilePath>..\bsp\boards\bsp_can.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_buzzer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp\boards\bsp_buzzer.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -714,6 +719,11 @@
               <FileName>gimbal_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\gimbal_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>gimbal_locked_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\gimbal_locked_task.c</FilePath>
             </File>
           </Files>
         </Group>

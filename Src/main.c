@@ -110,6 +110,7 @@ int main(void)
   MX_RNG_Init();
   MX_USART3_UART_Init();
   MX_USART1_UART_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
     delay_init();
 		remote_control_init();

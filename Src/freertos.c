@@ -60,6 +60,7 @@ osThreadId FricTaskHandle;
 osThreadId RunnerTaskHandle;
 osThreadId LedFlowTaskHandle;
 osThreadId GimbalTaskHandle;
+osThreadId GimbalLockedTasHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -73,6 +74,7 @@ void fric_task(void const * argument);
 void runner_task(void const * argument);
 void led_RGB_flow_task(void const * argument);
 void gimbal_task(void const * argument);
+void gimbal_locked_task(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -162,6 +164,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of GimbalTask */
   osThreadDef(GimbalTask, gimbal_task, osPriorityNormal, 0, 128);
   GimbalTaskHandle = osThreadCreate(osThread(GimbalTask), NULL);
+
+  /* definition and creation of GimbalLockedTas */
+  osThreadDef(GimbalLockedTas, gimbal_locked_task, osPriorityIdle, 0, 128);
+  GimbalLockedTasHandle = osThreadCreate(osThread(GimbalLockedTas), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -294,6 +300,24 @@ __weak void gimbal_task(void const * argument)
     osDelay(1);
   }
   /* USER CODE END gimbal_task */
+}
+
+/* USER CODE BEGIN Header_gimbal_locked_task */
+/**
+* @brief Function implementing the GimbalLockedTas thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_gimbal_locked_task */
+__weak void gimbal_locked_task(void const * argument)
+{
+  /* USER CODE BEGIN gimbal_locked_task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END gimbal_locked_task */
 }
 
 /* Private application code --------------------------------------------------*/
