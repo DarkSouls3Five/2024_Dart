@@ -174,6 +174,13 @@ static void gimbal_PID_init(gimbal_PID_t *pid, fp32 maxout, fp32 max_iout, fp32 
 static fp32 gimbal_PID_calc(gimbal_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
 void gimbal_PID_clear(gimbal_PID_t *gimbal_pid_clear);
 
+/*
+	* @brief          由pid计算发送电流
+  * @param[out]     gimbal_init:"gimbal_control"???????.
+  * @retval         none
+*/
+static void gimbal_current_calc(gimbal_act_t *gimbal_act_current);
+
 
 /*
   * @brief          云台不同控制模式对应函数，分别为自由状态、遥控器调整状态、锁死状态

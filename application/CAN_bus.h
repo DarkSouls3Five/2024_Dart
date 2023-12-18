@@ -69,7 +69,7 @@ typedef struct
 extern void get_motor_measure(motor_measure_t *ptr, uint8_t *data);    
 extern void CAN_cmd_fricl(int16_t motor1, int16_t motor2, int16_t motor3);
 extern void CAN_cmd_fricr(int16_t motor1, int16_t motor2, int16_t motor3);
-extern void CAN_cmd_runner(int16_t motor1, int16_t motor2, int16_t motor3);
+extern void CAN_cmd_can2(int16_t motor1, int16_t motor2, int16_t motor3);
 extern const motor_measure_t *get_motor_measure_point(uint8_t bus, uint16_t id); 
 
 

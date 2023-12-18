@@ -1060,14 +1060,14 @@ I (../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h)(0x62FF8197)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h)(0x62FF8197)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h)(0x62FF8197)
 I (../bsp/boards/bsp_servo_pwm.h)(0x6528DE22)
-I (..\application\CAN_bus.h)(0x657DC0D1)
+I (..\application\CAN_bus.h)(0x657FA759)
 I (..\application\remote_control.h)(0x651A61FA)
 I (../bsp/boards/bsp_rc.h)(0x651A61FA)
 I (..\application\runner_task.h)(0x652F4740)
 I (../components/controller/pid.h)(0x61063AF8)
 I (..\application\fric_task.h)(0x657475EC)
 F (..\application\CAN_bus.c)(0x657DC0AE)(--c99 -c --cpu Cortex-M4.fp -g -O2 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../application -I ../bsp/boards -I ../components/algorithm -I ../components/controller -I ../components/devices -I ../components/support -I ../components/algorithm/include-I.\RTE\_dart-IE:\MDK528\Packs\ARM\CMSIS\5.5.1\CMSIS\Core\Include-IE:\MDK528\Packs\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__FPU_USED="1U" -D__FPU_PRESENT="1U" -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o .\dart\can_bus.o --omf_browse .\dart\can_bus.crf --depend .\dart\can_bus.d)
-I (..\application\CAN_bus.h)(0x657DC0D1)
+I (..\application\CAN_bus.h)(0x657FA759)
 I (..\application\struct_typedef.h)(0x61063AF8)
 I (../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h)(0x62FF8197)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h)(0x62FF8197)
@@ -1167,7 +1167,7 @@ I (E:\MDK528\ARM\ARMCC\include\string.h)(0x5CEB79E2)
 F (..\application\runner_task.c)(0x657ECAC4)(--c99 -c --cpu Cortex-M4.fp -g -O2 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../application -I ../bsp/boards -I ../components/algorithm -I ../components/controller -I ../components/devices -I ../components/support -I ../components/algorithm/include-I.\RTE\_dart-IE:\MDK528\Packs\ARM\CMSIS\5.5.1\CMSIS\Core\Include-IE:\MDK528\Packs\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__FPU_USED="1U" -D__FPU_PRESENT="1U" -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o .\dart\runner_task.o --omf_browse .\dart\runner_task.crf --depend .\dart\runner_task.d)
 I (..\application\runner_task.h)(0x652F4740)
 I (..\application\struct_typedef.h)(0x61063AF8)
-I (..\application\CAN_bus.h)(0x657DC0D1)
+I (..\application\CAN_bus.h)(0x657FA759)
 I (../components/controller/pid.h)(0x61063AF8)
 I (..\application\remote_control.h)(0x651A61FA)
 I (../bsp/boards/bsp_rc.h)(0x651A61FA)
@@ -1222,7 +1222,7 @@ I (../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h)(0x62FF8197)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h)(0x62FF8197)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h)(0x62FF8197)
 I (../components/algorithm/user_lib.h)(0x61063AF8)
-I (..\application\gimbal_task.h)(0x657F185C)
+I (..\application\gimbal_task.h)(0x657FC6F5)
 F (..\application\debug.c)(0x6550E0B8)(--c99 -c --cpu Cortex-M4.fp -g -O2 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../application -I ../bsp/boards -I ../components/algorithm -I ../components/controller -I ../components/devices -I ../components/support -I ../components/algorithm/include-I.\RTE\_dart-IE:\MDK528\Packs\ARM\CMSIS\5.5.1\CMSIS\Core\Include-IE:\MDK528\Packs\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__FPU_USED="1U" -D__FPU_PRESENT="1U" -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o .\dart\debug.o --omf_browse .\dart\debug.crf --depend .\dart\debug.d)
 I (..\application\debug.h)(0x6550E0C3)
 I (E:\MDK528\ARM\ARMCC\include\stdio.h)(0x5CEB79E2)
@@ -1230,7 +1230,7 @@ I (E:\MDK528\ARM\ARMCC\include\stdint.h)(0x5CEB79E2)
 F (..\application\fric_task.c)(0x657420B9)(--c99 -c --cpu Cortex-M4.fp -g -O2 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../application -I ../bsp/boards -I ../components/algorithm -I ../components/controller -I ../components/devices -I ../components/support -I ../components/algorithm/include-I.\RTE\_dart-IE:\MDK528\Packs\ARM\CMSIS\5.5.1\CMSIS\Core\Include-IE:\MDK528\Packs\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__FPU_USED="1U" -D__FPU_PRESENT="1U" -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o .\dart\fric_task.o --omf_browse .\dart\fric_task.crf --depend .\dart\fric_task.d)
 I (..\application\fric_task.h)(0x657475EC)
 I (..\application\struct_typedef.h)(0x61063AF8)
-I (..\application\CAN_bus.h)(0x657DC0D1)
+I (..\application\CAN_bus.h)(0x657FA759)
 I (../components/controller/pid.h)(0x61063AF8)
 I (..\application\remote_control.h)(0x651A61FA)
 I (../bsp/boards/bsp_rc.h)(0x651A61FA)
@@ -1286,10 +1286,10 @@ I (../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h)(0x62FF8197)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h)(0x62FF8197)
 I (E:\MDK528\ARM\ARMCC\include\stdio.h)(0x5CEB79E2)
 I (..\application\debug.h)(0x6550E0C3)
-F (..\application\gimbal_task.c)(0x657F15F8)(--c99 -c --cpu Cortex-M4.fp -g -O2 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../application -I ../bsp/boards -I ../components/algorithm -I ../components/controller -I ../components/devices -I ../components/support -I ../components/algorithm/include-I.\RTE\_dart-IE:\MDK528\Packs\ARM\CMSIS\5.5.1\CMSIS\Core\Include-IE:\MDK528\Packs\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__FPU_USED="1U" -D__FPU_PRESENT="1U" -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o .\dart\gimbal_task.o --omf_browse .\dart\gimbal_task.crf --depend .\dart\gimbal_task.d)
-I (..\application\gimbal_task.h)(0x657F185C)
+F (..\application\gimbal_task.c)(0x657FC70C)(--c99 -c --cpu Cortex-M4.fp -g -O2 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../application -I ../bsp/boards -I ../components/algorithm -I ../components/controller -I ../components/devices -I ../components/support -I ../components/algorithm/include-I.\RTE\_dart-IE:\MDK528\Packs\ARM\CMSIS\5.5.1\CMSIS\Core\Include-IE:\MDK528\Packs\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__FPU_USED="1U" -D__FPU_PRESENT="1U" -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o .\dart\gimbal_task.o --omf_browse .\dart\gimbal_task.crf --depend .\dart\gimbal_task.d)
+I (..\application\gimbal_task.h)(0x657FC6F5)
 I (..\application\struct_typedef.h)(0x61063AF8)
-I (..\application\CAN_bus.h)(0x657DC0D1)
+I (..\application\CAN_bus.h)(0x657FA759)
 I (../components/controller/pid.h)(0x61063AF8)
 I (..\application\remote_control.h)(0x651A61FA)
 I (../bsp/boards/bsp_rc.h)(0x651A61FA)

@@ -272,11 +272,7 @@ void gimbal_rc_control(gimbal_act_t *gimbal_act_rc)
 		gimbal_act_rc->motor_data.motor_angle_set += yaw_channel*YAW_RC_COEFF;
 	
 	//pid计算发送电流
-	gimbal_act_rc->motor_data.motor_speed_set = gimbal_PID_calc(&gimbal_act_rc->gimbal_angle_pid, 
-																											gimbal_act_rc->motor_data.motor_angle, 
-																											gimbal_act_rc->motor_data.motor_angle_set, 
-																											gimbal_act_rc->motor_data.motor_speed);
-	gimbal_act_rc->motor_data.give_current = (int16_t)PID_calc(&gimbal_act_rc->gimbal_speed_pid, gimbal_act_rc->motor_data.motor_speed, gimbal_act_rc->motor_data.motor_speed_set);
+		gimbal_current_calc(gimbal_act_rc);
 	
 	
 	/*增量式控制，没什么用，别管
@@ -301,15 +297,36 @@ void gimbal_locked_control(gimbal_act_t *gimbal_act_locked)
 	{
 		return;
 	}
-		
+/*	
+	//锁定模式判断
+	if (gimbal_act_locked->RC_data->rc.ch[3] > 600)					//左摇杆向前推维持1s，归中
+	{
+		vTaskDelay(1000);
+		if (gimbal_act_locked->RC_data->rc.ch[3] > 600)
+		{
+			gimbal_act_locked->motor_data.motor_angle_set = MIDDLE_ANGLE;
+		}
+	}
+	else if (gimbal_act_locked->RC_data->rc.ch[2] > 600)					//左摇杆向右推维持1s，瞄准基地
+	{
+		vTaskDelay(1000);
+		if (gimbal_act_locked->RC_data->rc.ch[2] > 600)
+		{
+			gimbal_act_locked->motor_data.motor_angle_set = OUTPOST_ANGLE;
+		}
+	}
+	else if (gimbal_act_locked->RC_data->rc.ch[2] < -600)					//左摇杆向左推维持1s，瞄准前哨站
+	{
+		vTaskDelay(1000);
+		if (gimbal_act_locked->RC_data->rc.ch[2] < -600)
+		{
+			gimbal_act_locked->motor_data.motor_angle_set = FOUNDATION_ANGLE;
+		}
+	}		
+*/		
+	//pid计算发送电流
 		//pid计算发送电流
-		gimbal_act_locked->motor_data.motor_speed_set = gimbal_PID_calc(&gimbal_act_locked->gimbal_angle_pid, 
-																											gimbal_act_locked->motor_data.motor_angle, 
-																											gimbal_act_locked->motor_data.motor_angle_set, 
-																											gimbal_act_locked->motor_data.motor_speed);
-		gimbal_act_locked->motor_data.give_current = (int16_t)PID_calc(&gimbal_act_locked->gimbal_speed_pid, gimbal_act_locked->motor_data.motor_speed, gimbal_act_locked->motor_data.motor_speed_set);
-	
-
+		gimbal_current_calc(gimbal_act_locked);
 }
 
 //电机角度到输出电流转换
@@ -319,6 +336,7 @@ void cal_from_detla_to_current(gimbal_act_t *gimbal_move_data)
 	{
 		return;
 	}
+	
 	gimbal_move_data->motor_data.motor_speed_set = gimbal_PID_calc(&gimbal_move_data->gimbal_angle_pid,
 				gimbal_move_data->motor_data.relative_angle, gimbal_move_data->motor_data.relative_angle_set,gimbal_move_data->motor_data.gimbal_motor_measure->speed_rpm);
 	gimbal_move_data->motor_data.give_current = PID_calc(&gimbal_move_data->gimbal_speed_pid, gimbal_move_data->motor_data.gimbal_motor_measure->speed_rpm, gimbal_move_data->motor_data.motor_speed_set);
@@ -396,4 +414,23 @@ void gimbal_PID_clear(gimbal_PID_t *gimbal_pid_clear)
     }
     gimbal_pid_clear->last_err = gimbal_pid_clear->err = gimbal_pid_clear->set = gimbal_pid_clear->get = 0.0f;
     gimbal_pid_clear->out = gimbal_pid_clear->Pout = gimbal_pid_clear->Iout = gimbal_pid_clear->Dout = 0.0f;
+}
+
+/*
+	* @brief          由pid计算发送电流
+  * @param[out]     gimbal_init:"gimbal_control"???????.
+  * @retval         none
+*/
+static void gimbal_current_calc(gimbal_act_t *gimbal_act_current)
+{
+		if(gimbal_act_current ==NULL)
+		{
+			return;
+		}
+		gimbal_act_current->motor_data.motor_speed_set = gimbal_PID_calc(&gimbal_act_current->gimbal_angle_pid, 
+																											gimbal_act_current->motor_data.motor_angle, 
+																											gimbal_act_current->motor_data.motor_angle_set, 
+																											gimbal_act_current->motor_data.motor_speed);
+		gimbal_act_current->motor_data.give_current = (int16_t)PID_calc(&gimbal_act_current->gimbal_speed_pid, gimbal_act_current->motor_data.motor_speed, gimbal_act_current->motor_data.motor_speed_set);
+		
 }
