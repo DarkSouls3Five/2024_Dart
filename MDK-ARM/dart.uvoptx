@@ -223,62 +223,57 @@
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
-          <ItemText>count_j,0x0A</ItemText>
+          <ItemText>runner_act_mode-&gt;runner_mode</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>servo_mode</ItemText>
+          <ItemText>runner_act_t</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>last_servo_mode</ItemText>
+          <ItemText>runner_act,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
           <WinNumber>1</WinNumber>
-          <ItemText>fric_act.fric_mode</ItemText>
+          <ItemText>gimbal_act,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>18</count>
           <WinNumber>1</WinNumber>
-          <ItemText>runner_act.runner_mode</ItemText>
+          <ItemText>gimbal_motor_measure</ItemText>
         </Ww>
         <Ww>
           <count>19</count>
           <WinNumber>1</WinNumber>
-          <ItemText>RC_data-&gt;rc.ch[2],0x0A</ItemText>
+          <ItemText>gimbal_mode_flag</ItemText>
         </Ww>
         <Ww>
           <count>20</count>
           <WinNumber>1</WinNumber>
-          <ItemText>runner_act_mode-&gt;runner_mode</ItemText>
+          <ItemText>runner_can_send_data[0]</ItemText>
         </Ww>
         <Ww>
           <count>21</count>
           <WinNumber>1</WinNumber>
-          <ItemText>runner_act_t</ItemText>
+          <ItemText>runner_can_send_data[8]</ItemText>
         </Ww>
         <Ww>
           <count>22</count>
           <WinNumber>1</WinNumber>
-          <ItemText>runner_act</ItemText>
+          <ItemText>runner_act,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>23</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gimbal_act,0x0A</ItemText>
+          <ItemText>runner_act,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>24</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gimbal_motor_measure</ItemText>
-        </Ww>
-        <Ww>
-          <count>25</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>gimbal_mode_flag</ItemText>
+          <ItemText>last_servo_mode</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

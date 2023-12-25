@@ -36,6 +36,7 @@
 #include "remote_control.h"
 #include "bsp_can.h"
 #include "bsp_usart.h"
+#include "bsp_buzzer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -63,7 +64,8 @@
 void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
-
+void user_delay_us(uint16_t us);
+void user_delay_ms(uint16_t ms); 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -116,6 +118,11 @@ int main(void)
 		remote_control_init();
 		can_filter_init();
 //		usart1_tx_dma_init();
+/*
+    buzzer_on(1, 30000);
+    user_delay_ms(300);
+    buzzer_off();
+*/
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
@@ -180,7 +187,23 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void user_delay_us(uint16_t us)
+{
+    for (; us > 0; us--)
+    {
+        for (uint8_t i = 50; i > 0; i--)
+        {
+            ;
+        }
+    }
+}
+void user_delay_ms(uint16_t ms)
+{
+    for (; ms > 0; ms--)
+    {
+        user_delay_us(1000);
+    }
+}
 /* USER CODE END 4 */
 
 /**

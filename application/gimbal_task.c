@@ -119,7 +119,7 @@ static void gimbal_init(gimbal_act_t *gimbal_act_init)
   * @retval         none
   */
 /**
-  * @brief          设置云台控制模式，主要在'gimbal_behaviour_mode_set'函数中改变
+  * @brief          设置云台控制模式
   * @param[out]     gimbal_set_mode:"gimbal_act_t"变量指针
   * @retval         none
   */
@@ -387,9 +387,11 @@ static void gimbal_current_calc(gimbal_act_t *gimbal_act_current)
 			return;
 		}
 		gimbal_act_current->motor_data.motor_speed_set = gimbal_PID_calc(&gimbal_act_current->gimbal_angle_pid, 
-																											gimbal_act_current->motor_data.motor_angle, 
-																											gimbal_act_current->motor_data.motor_angle_set, 
-																											gimbal_act_current->motor_data.motor_speed);
-		gimbal_act_current->motor_data.give_current = (int16_t)PID_calc(&gimbal_act_current->gimbal_speed_pid, gimbal_act_current->motor_data.motor_speed, gimbal_act_current->motor_data.motor_speed_set);
+																											                gimbal_act_current->motor_data.motor_angle, 
+																											                gimbal_act_current->motor_data.motor_angle_set, 
+																											                gimbal_act_current->motor_data.motor_speed);
+		gimbal_act_current->motor_data.give_current = (int16_t)PID_calc(&gimbal_act_current->gimbal_speed_pid,
+		                                                                 gimbal_act_current->motor_data.motor_speed, 
+		                                                                 gimbal_act_current->motor_data.motor_speed_set);
 		
 }

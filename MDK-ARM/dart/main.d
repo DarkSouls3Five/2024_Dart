@@ -64,3 +64,4 @@
 .\dart\main.o: ../bsp/boards/bsp_rc.h
 .\dart\main.o: ../bsp/boards/bsp_can.h
 .\dart\main.o: ../bsp/boards/bsp_usart.h
+.\dart\main.o: ../bsp/boards/bsp_buzzer.h

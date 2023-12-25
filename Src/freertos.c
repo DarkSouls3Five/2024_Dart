@@ -29,7 +29,6 @@
 
 
 #include "led_flow_task.h"
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -64,7 +63,7 @@ osThreadId GimbalLockedTasHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-   
+  
 /* USER CODE END FunctionPrototypes */
 
 void test_task(void const * argument);
@@ -166,11 +165,12 @@ void MX_FREERTOS_Init(void) {
   GimbalTaskHandle = osThreadCreate(osThread(GimbalTask), NULL);
 
   /* definition and creation of GimbalLockedTas */
-  osThreadDef(GimbalLockedTas, gimbal_locked_task, osPriorityIdle, 0, 128);
+  osThreadDef(GimbalLockedTas, gimbal_locked_task, osPriorityNormal, 0, 128);
   GimbalLockedTasHandle = osThreadCreate(osThread(GimbalLockedTas), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+
   /* USER CODE END RTOS_THREADS */
 
 }

@@ -31,7 +31,7 @@
 
 
 
-#define FRIC_SET_SPEED 1000.0f
+#define FRIC_SET_SPEED 200.0f
 
 typedef enum
 {

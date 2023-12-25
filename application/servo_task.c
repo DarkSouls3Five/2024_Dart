@@ -24,8 +24,8 @@
 #include "runner_task.h"
 #include "fric_task.h"
 
-#define SERVO_PULL_PWM   1850
-#define SERVO_PUSH_PWM   1000
+#define SERVO_PULL_PWM   2040	//舵机蓄力
+#define SERVO_PUSH_PWM   1000	//舵机击发
 
 
 
@@ -69,6 +69,7 @@ void servo_task(void const * argument)
 void servo_set_mode()
 {
 	if (last_servo_mode == SERVO_PULL && get_fric_mode() == FRIC_ON && get_runner_mode() == RUNNER_READY)
+//	if (last_servo_mode == SERVO_PULL )//调试用
 	{
 		if (RC_data->rc.ch[1] > 600)
 		{
