@@ -30,7 +30,7 @@ extern gimbal_act_t gimbal_act;
 */
 void	gimbal_locked_set(gimbal_act_t *gimbal_act_locked_set)
 {
-	if(gimbal_act_locked_set->gimbal_mode == GIMBAL_LOCKED)
+	if(gimbal_act_locked_set->gimbal_mode == GIMBAL_CONTROL)
 	{
 		//锁定状态下进行判断，默认锁死在GIMBAL_CONTROL模式下确定的位置，长推摇杆改变锁死位置
 		
@@ -40,22 +40,25 @@ void	gimbal_locked_set(gimbal_act_t *gimbal_act_locked_set)
 			if (gimbal_act_locked_set->RC_data->rc.ch[3] > 600)
 			{
 				gimbal_act_locked_set->motor_data.motor_angle_set = MIDDLE_ANGLE;
+//				vTaskDelay(500);
 			}
 		}
-		else if (gimbal_act_locked_set->RC_data->rc.ch[2] > 600)					//左摇杆向右推维持1s，瞄准基地
+		else if (gimbal_act_locked_set->RC_data->rc.ch[0] > 600)					//右摇杆向右推维持1s，瞄准基地
 		{
 			vTaskDelay(1000);
-			if (gimbal_act_locked_set->RC_data->rc.ch[2] > 600)
+			if (gimbal_act_locked_set->RC_data->rc.ch[0] > 600)
 			{
 				gimbal_act_locked_set->motor_data.motor_angle_set = FOUNDATION_ANGLE;
+//				vTaskDelay(500);
 			}
 		}
-		else if (gimbal_act_locked_set->RC_data->rc.ch[2] < -600)					//左摇杆向左推维持1s，瞄准前哨站
+		else if (gimbal_act_locked_set->RC_data->rc.ch[0] < -600)					//右摇杆向左推维持1s，瞄准前哨站
 		{
 			vTaskDelay(1000);
-			if (gimbal_act_locked_set->RC_data->rc.ch[2] < -600)
+			if (gimbal_act_locked_set->RC_data->rc.ch[0] < -600)
 			{
 				gimbal_act_locked_set->motor_data.motor_angle_set = OUTPOST_ANGLE;
+//				vTaskDelay(500);
 			}
 		}
 	}

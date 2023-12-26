@@ -104,6 +104,7 @@ static void gimbal_init(gimbal_act_t *gimbal_act_init)
 		
 		gimbal_PID_init(&gimbal_act_init->gimbal_angle_pid, GIMBAL_MOTOR_ANGLE_PID_MAX_OUT, GIMBAL_MOTOR_ANGLE_PID_MAX_IOUT, GIMBAL_MOTOR_ANGLE_PID_KP, GIMBAL_MOTOR_ANGLE_PID_KI, GIMBAL_MOTOR_ANGLE_PID_KD);
 		PID_init(&gimbal_act_init->gimbal_speed_pid, PID_POSITION, motor_speed_pid, GIMBAL_MOTOR_SPEED_PID_MAX_OUT, GIMBAL_MOTOR_SPEED_PID_MAX_IOUT);
+		gimbal_PID_init(&gimbal_act_init->gimbal_locked_pid, GIMBAL_MOTOR_LOCKED_PID_MAX_OUT, GIMBAL_MOTOR_LOCKED_PID_MAX_IOUT, GIMBAL_MOTOR_LOCKED_PID_KP, GIMBAL_MOTOR_LOCKED_PID_KI, GIMBAL_MOTOR_LOCKED_PID_KD);
 		
 		gimbal_PID_clear(&gimbal_act_init->gimbal_angle_pid);
 		PID_clear(&gimbal_act_init->gimbal_speed_pid);
@@ -165,7 +166,7 @@ static void gimbal_feedback_update(gimbal_act_t *gimbal_act_update)
     {
         return;
     }
-		gimbal_act_update->motor_data.motor_angle = ECD2ANGLE * (gimbal_act_update->motor_data.gimbal_motor_measure->ecd + ECD_RANGE * gimbal_act_update->motor_data.gimbal_motor_measure->ecd_count - MIDDLE_GIMBAL);
+		gimbal_act_update->motor_data.motor_angle = ECD2ANGLE_GIMBAL * (gimbal_act_update->motor_data.gimbal_motor_measure->ecd + ECD_RANGE * gimbal_act_update->motor_data.gimbal_motor_measure->ecd_count - MIDDLE_GIMBAL);
 		gimbal_act_update->motor_data.motor_speed = gimbal_act_update->motor_data.gimbal_motor_measure->speed_rpm;
 }
 
@@ -284,8 +285,12 @@ void gimbal_locked_control(gimbal_act_t *gimbal_act_locked)
 		return;
 	}		
 	
-		//pid计算发送电流
-		gimbal_current_calc(gimbal_act_locked);
+		//pid计算发送电流（单环）
+
+		gimbal_act_locked->motor_data.give_current = gimbal_PID_calc(&gimbal_act_locked->gimbal_locked_pid, 
+																											                gimbal_act_locked->motor_data.motor_angle, 
+																											                gimbal_act_locked->motor_data.motor_angle_set, 
+																											                gimbal_act_locked->motor_data.motor_speed);
 }
 
 //电机角度到输出电流转换

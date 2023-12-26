@@ -9,33 +9,41 @@
 #define GIMBAL_TASK_INIT_TIME 300
 #define GIMBAL_CONTROL_TIME_MS 5
 
-//Yaw轴pid设置
-#define GIMBAL_MOTOR_SPEED_PID_KP 100.0f
+//Yaw轴转动pid设置
+#define GIMBAL_MOTOR_SPEED_PID_KP 50.0f
 #define GIMBAL_MOTOR_SPEED_PID_KI 0.0f
-#define GIMBAL_MOTOR_SPEED_PID_KD 0.0f
+#define GIMBAL_MOTOR_SPEED_PID_KD -0.5f
 
 #define GIMBAL_MOTOR_SPEED_PID_MAX_OUT 6000.0f//8000.0f
 #define GIMBAL_MOTOR_SPEED_PID_MAX_IOUT 200.0f
 
-#define GIMBAL_MOTOR_ANGLE_PID_KP 800//1200.0f//1500.0f
+#define GIMBAL_MOTOR_ANGLE_PID_KP 500.0f//1200.0f//1500.0f
 #define GIMBAL_MOTOR_ANGLE_PID_KI 0.0f
-#define GIMBAL_MOTOR_ANGLE_PID_KD -2.0f
+#define GIMBAL_MOTOR_ANGLE_PID_KD -5.0f
 
 #define GIMBAL_MOTOR_ANGLE_PID_MAX_OUT 70.0f
 #define GIMBAL_MOTOR_ANGLE_PID_MAX_IOUT 0.0f
 
+//锁死模式下pid
+#define GIMBAL_MOTOR_LOCKED_PID_KP 35000.0f
+#define GIMBAL_MOTOR_LOCKED_PID_KI 10.0f
+#define GIMBAL_MOTOR_LOCKED_PID_KD -500.0f
+
+#define GIMBAL_MOTOR_LOCKED_PID_MAX_OUT 30000.0f
+#define GIMBAL_MOTOR_LOCKED_PID_MAX_IOUT 0.0f
+
 //Yaw轴ecd范围
-#define MAX_GIMBAL  3680//3650
-#define MIN_GIMBAL  2380//2370
-#define MIDDLE_GIMBAL  2000
+#define MAX_GIMBAL  6080//3680//3650
+#define MIN_GIMBAL  4750//2380//2370
+#define MIDDLE_GIMBAL  5418//2000
 
 //不同目标对应角度
-#define MIDDLE_ANGLE 0.79000141//0.87135624f//0.79306811			//中值
-#define OUTPOST_ANGLE 0.52001931		//前哨站
-#define FOUNDATION_ANGLE 1.21644676	//基地
+#define MIDDLE_ANGLE 0.0//0.79000141//0.87135624f//0.79306811			//中值
+#define OUTPOST_ANGLE -6.49824905		//前哨站
+#define FOUNDATION_ANGLE 7.30579853	//基地
 
 //遥控器灵敏度，分母越大灵敏度越低
-#define YAW_RC_COEFF 1.57/200000.0f
+#define YAW_RC_COEFF 1.57/20000.0f
 
 
 typedef enum
@@ -88,7 +96,8 @@ typedef struct
   gimbal_motor_t motor_data;          //chassis motor data.??????????
 	gimbal_PID_t gimbal_angle_pid;
   pid_type_def gimbal_speed_pid;             //motor speed PID.?????????pid
-
+	gimbal_PID_t gimbal_locked_pid;
+	
 
 } gimbal_act_t;
 

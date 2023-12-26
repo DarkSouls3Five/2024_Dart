@@ -26,6 +26,8 @@
 #define HALF_ECD_RANGE 4096
 #define ECD_RANGE 8192
 #define ECD2ANGLE 2 * 3.1415926535f / ECD_RANGE
+#define REDUCTION_GIMBAL 0.2871287f		//ÔÆÌ¨¼õËÙ±È
+#define ECD2ANGLE_GIMBAL  REDUCTION_GIMBAL* 360.0f / ECD_RANGE
 
 /* GPIO send and receive ID */
 typedef enum
