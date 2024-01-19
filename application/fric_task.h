@@ -14,13 +14,13 @@
 //fric motor speed PID
 //???????PID
 
-#define FRIC_LEFT_SPEED_PID_KP      5.0f
+#define FRIC_LEFT_SPEED_PID_KP      10.0f//5.0f
 #define FRIC_LEFT_SPEED_PID_KI			0.0f
-#define FRIC_LEFT_SPEED_PID_KD			0.3f
+#define FRIC_LEFT_SPEED_PID_KD			0.5f//0.3f
 
-#define FRIC_RIGHT_SPEED_PID_KP		  5.0f
+#define FRIC_RIGHT_SPEED_PID_KP		  10.0f//5.0f
 #define FRIC_RIGHT_SPEED_PID_KI     0.0f
-#define FRIC_RIGHT_SPEED_PID_KD     0.3f
+#define FRIC_RIGHT_SPEED_PID_KD     0.5f//0.3f
 
 
 #define FRIC_LEFT_PID_MAX_OUT   MAX_3508_CAN_CURRENT
@@ -31,7 +31,7 @@
 
 
 
-#define FRIC_SET_SPEED 200.0f
+#define FRIC_SET_SPEED 5000.0f//5000.0f
 
 typedef enum
 {

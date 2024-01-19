@@ -725,6 +725,11 @@
               <FileType>1</FileType>
               <FilePath>..\application\gimbal_locked_task.c</FilePath>
             </File>
+            <File>
+              <FileName>laser_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\laser_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -59,6 +59,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define Laser_Pin GPIO_PIN_8
+#define Laser_GPIO_Port GPIOC
 #define RSTN_IST8310_Pin GPIO_PIN_6
 #define RSTN_IST8310_GPIO_Port GPIOG
 #define LED_R_Pin GPIO_PIN_12

@@ -33,6 +33,7 @@
 ".\dart\fric_task.o"
 ".\dart\gimbal_task.o"
 ".\dart\gimbal_locked_task.o"
+".\dart\laser_task.o"
 ".\dart\user_lib.o"
 ".\dart\mahonyahrs.o"
 ".\dart\pid.o"

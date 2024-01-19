@@ -54,7 +54,7 @@ osThreadId led_RGB_flow_handle;
 /* USER CODE END Variables */
 osThreadId testHandle;
 osThreadId ServoTaskHandle;
-osThreadId GpioTaskHandle;
+osThreadId LaserTaskHandle;
 osThreadId FricTaskHandle;
 osThreadId RunnerTaskHandle;
 osThreadId LedFlowTaskHandle;
@@ -68,7 +68,7 @@ osThreadId GimbalLockedTasHandle;
 
 void test_task(void const * argument);
 void servo_task(void const * argument);
-void gpio_task(void const * argument);
+void laser_task(void const * argument);
 void fric_task(void const * argument);
 void runner_task(void const * argument);
 void led_RGB_flow_task(void const * argument);
@@ -144,9 +144,9 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(ServoTask, servo_task, osPriorityNormal, 0, 128);
   ServoTaskHandle = osThreadCreate(osThread(ServoTask), NULL);
 
-  /* definition and creation of GpioTask */
-  osThreadDef(GpioTask, gpio_task, osPriorityNormal, 0, 128);
-  GpioTaskHandle = osThreadCreate(osThread(GpioTask), NULL);
+  /* definition and creation of LaserTask */
+  osThreadDef(LaserTask, laser_task, osPriorityNormal, 0, 128);
+  LaserTaskHandle = osThreadCreate(osThread(LaserTask), NULL);
 
   /* definition and creation of FricTask */
   osThreadDef(FricTask, fric_task, osPriorityNormal, 0, 128);
@@ -212,22 +212,22 @@ __weak void servo_task(void const * argument)
   /* USER CODE END servo_task */
 }
 
-/* USER CODE BEGIN Header_gpio_task */
+/* USER CODE BEGIN Header_laser_task */
 /**
-* @brief Function implementing the GpioTask thread.
+* @brief Function implementing the LaserTask thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_gpio_task */
-__weak void gpio_task(void const * argument)
+/* USER CODE END Header_laser_task */
+__weak void laser_task(void const * argument)
 {
-  /* USER CODE BEGIN gpio_task */
+  /* USER CODE BEGIN laser_task */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END gpio_task */
+  /* USER CODE END laser_task */
 }
 
 /* USER CODE BEGIN Header_fric_task */
