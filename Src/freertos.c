@@ -53,13 +53,13 @@ osThreadId led_RGB_flow_handle;
 
 /* USER CODE END Variables */
 osThreadId testHandle;
-osThreadId ServoTaskHandle;
 osThreadId LaserTaskHandle;
 osThreadId FricTaskHandle;
-osThreadId RunnerTaskHandle;
 osThreadId LedFlowTaskHandle;
 osThreadId GimbalTaskHandle;
 osThreadId GimbalLockedTasHandle;
+osThreadId TranslateTaskHandle;
+osThreadId AdvanceTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -67,13 +67,13 @@ osThreadId GimbalLockedTasHandle;
 /* USER CODE END FunctionPrototypes */
 
 void test_task(void const * argument);
-void servo_task(void const * argument);
 void laser_task(void const * argument);
 void fric_task(void const * argument);
-void runner_task(void const * argument);
 void led_RGB_flow_task(void const * argument);
 void gimbal_task(void const * argument);
 void gimbal_locked_task(void const * argument);
+void translate_task(void const * argument);
+void advance_task(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -140,10 +140,6 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(test, test_task, osPriorityBelowNormal, 0, 128);
   testHandle = osThreadCreate(osThread(test), NULL);
 
-  /* definition and creation of ServoTask */
-  osThreadDef(ServoTask, servo_task, osPriorityNormal, 0, 128);
-  ServoTaskHandle = osThreadCreate(osThread(ServoTask), NULL);
-
   /* definition and creation of LaserTask */
   osThreadDef(LaserTask, laser_task, osPriorityNormal, 0, 128);
   LaserTaskHandle = osThreadCreate(osThread(LaserTask), NULL);
@@ -151,10 +147,6 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of FricTask */
   osThreadDef(FricTask, fric_task, osPriorityNormal, 0, 128);
   FricTaskHandle = osThreadCreate(osThread(FricTask), NULL);
-
-  /* definition and creation of RunnerTask */
-  osThreadDef(RunnerTask, runner_task, osPriorityNormal, 0, 128);
-  RunnerTaskHandle = osThreadCreate(osThread(RunnerTask), NULL);
 
   /* definition and creation of LedFlowTask */
   osThreadDef(LedFlowTask, led_RGB_flow_task, osPriorityNormal, 0, 128);
@@ -167,6 +159,14 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of GimbalLockedTas */
   osThreadDef(GimbalLockedTas, gimbal_locked_task, osPriorityNormal, 0, 128);
   GimbalLockedTasHandle = osThreadCreate(osThread(GimbalLockedTas), NULL);
+
+  /* definition and creation of TranslateTask */
+  osThreadDef(TranslateTask, translate_task, osPriorityNormal, 0, 128);
+  TranslateTaskHandle = osThreadCreate(osThread(TranslateTask), NULL);
+
+  /* definition and creation of AdvanceTask */
+  osThreadDef(AdvanceTask, advance_task, osPriorityIdle, 0, 128);
+  AdvanceTaskHandle = osThreadCreate(osThread(AdvanceTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -192,24 +192,6 @@ __weak void test_task(void const * argument)
     osDelay(1);
   }
   /* USER CODE END test_task */
-}
-
-/* USER CODE BEGIN Header_servo_task */
-/**
-* @brief Function implementing the ServoTask thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_servo_task */
-__weak void servo_task(void const * argument)
-{
-  /* USER CODE BEGIN servo_task */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END servo_task */
 }
 
 /* USER CODE BEGIN Header_laser_task */
@@ -246,24 +228,6 @@ __weak void fric_task(void const * argument)
     osDelay(1);
   }
   /* USER CODE END fric_task */
-}
-
-/* USER CODE BEGIN Header_runner_task */
-/**
-* @brief Function implementing the RunnerTask thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_runner_task */
-__weak void runner_task(void const * argument)
-{
-  /* USER CODE BEGIN runner_task */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END runner_task */
 }
 
 /* USER CODE BEGIN Header_led_RGB_flow_task */
@@ -318,6 +282,42 @@ __weak void gimbal_locked_task(void const * argument)
     osDelay(1);
   }
   /* USER CODE END gimbal_locked_task */
+}
+
+/* USER CODE BEGIN Header_translate_task */
+/**
+* @brief Function implementing the TranslateTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_translate_task */
+__weak void translate_task(void const * argument)
+{
+  /* USER CODE BEGIN translate_task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END translate_task */
+}
+
+/* USER CODE BEGIN Header_advance_task */
+/**
+* @brief Function implementing the AdvanceTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_advance_task */
+__weak void advance_task(void const * argument)
+{
+  /* USER CODE BEGIN advance_task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END advance_task */
 }
 
 /* Private application code --------------------------------------------------*/

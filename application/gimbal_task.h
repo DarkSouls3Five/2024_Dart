@@ -39,7 +39,7 @@
 
 //不同目标对应角度
 #define MIDDLE_ANGLE 0.0//0.79000141//0.87135624f//0.79306811			//中值
-#define OUTPOST_ANGLE -6.49824905		//前哨站
+#define OUTPOST_ANGLE -5.80426121		//前哨站
 #define FOUNDATION_ANGLE 7.30579853	//基地
 
 //遥控器灵敏度，分母越大灵敏度越低

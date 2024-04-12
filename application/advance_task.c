@@ -5,7 +5,7 @@
   * @note       
   * @history
   *  Version    Date            Author          Modification
-  *  V1.0.0     Oct-15-2023     Cherryblossomnight              1. done
+  *  V1.0.0     April-12-2024   Ignis              1. done
   *
   @verbatim
   ==============================================================================
@@ -15,7 +15,7 @@
   ****************************(C) COPYRIGHT 2019 DJI****************************
   */
 
-#include "runner_task.h"
+#include "advance_task.h"
 #include "main.h"
 #include "cmsis_os.h"
 #include "CAN_bus.h"
@@ -24,13 +24,13 @@
 #include "gimbal_task.h"
 
 
-double fabs(double a)
-{
-	if (a >= 0)
-		return a;
-	else 
-		return -a;
-}
+//double fabs(double a)
+//{
+//	if (a >= 0)
+//		return a;
+//	else 
+//		return -a;
+//}
 
 /**
   * @brief          "runner_act" valiable initialization, include pid initialization, remote control data point initialization, runner motor
@@ -43,7 +43,7 @@ double fabs(double a)
   * @param[out]     runner_act_init:"runner_act"???????.
   * @retval         none
   */
-static void runner_init(runner_act_t *runner_act_init);
+static void adv_init(adv_act_t *adv_act_init);
 
 /**
   * @brief          set gimbal control mode, mainly call 'gimbal_behaviour_mode_set' function
@@ -55,18 +55,18 @@ static void runner_init(runner_act_t *runner_act_init);
   * @param[out]     gimbal_set_mode:"gimbal_control"???????.
   * @retval         none
   */
-static void runner_set_mode(runner_act_t *runner_act_mode);
+static void adv_set_mode(adv_act_t *adv_act_mode);
 /**
   * @brief          runner some measure data updata, such as motor enconde, euler angle, gyro
   * @param[out]     runner_feedback_update: "runner_act" valiable point
   * @retval         none
   */
 /**
-  * @brief          ???_?????????£????????????y???????????????
+  * @brief          ???_?????????????????????y???????????????
   * @param[out]     runner_feedback_update:"runner_act"???????.
   * @retval         none
   */
-static void runner_feedback_update(runner_act_t *runner_act_init);
+static void adv_feedback_update(adv_act_t *adv_act_init);
 
 /**
   * @brief          set runner control set-point.
@@ -78,7 +78,7 @@ static void runner_feedback_update(runner_act_t *runner_act_init);
   * @param[out]     runner_act_control:"runner_act"???????.
   * @retval         none
   */
-static void runner_control_loop(runner_act_t *runner_act_control,gimbal_act_t *gimbal_act_control);
+static void adv_control_loop(adv_act_t *adv_act_control);
 /**
   * @brief          "gimbal_control" valiable initialization, include pid initialization, remote control data point initialization, gimbal motors
   *                 data point initialization, and gyro sensor angle point initialization.
@@ -90,11 +90,12 @@ static void runner_control_loop(runner_act_t *runner_act_control,gimbal_act_t *g
   * @param[out]     gimbal_init:"gimbal_control"???????.
   * @retval         none
   */
-static void runner_PID_init(runner_PID_t *pid, fp32 maxout, fp32 max_iout, fp32 kp, fp32 ki, fp32 kd);
-static fp32 runner_PID_calc(runner_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
+static void adv_PID_init(adv_PID_t *pid, fp32 maxout, fp32 max_iout, fp32 kp, fp32 ki, fp32 kd);
+static fp32 adv_PID_calc(adv_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
 
-runner_act_t runner_act;
+adv_act_t adv_act;
 extern gimbal_act_t gimbal_act;
+int last_s_adv;
 /**
   * @brief          runner_task
   * @param[in]      pvParameters: NULL
@@ -105,21 +106,21 @@ extern gimbal_act_t gimbal_act;
   * @param[in]      pvParameters: NULL
   * @retval         none
   */
-void runner_task(void const * argument)
+void advance_task(void const * argument)
 {
 	 //wait a time 
     //????h?????
-    vTaskDelay(RUNNER_TASK_INIT_TIME);
+    vTaskDelay(ADV_TASK_INIT_TIME);
     //chassis init
     //?????'??
-    runner_init(&runner_act);
+    adv_init(&adv_act);
     while(1)
     {
-			runner_set_mode(&runner_act);                    //???????????g?
-      runner_feedback_update(&runner_act);            //??????????
-      runner_control_loop(&runner_act,&gimbal_act);
-			vTaskDelay(RUNNER_CONTROL_TIME_MS);
-			runner_act.last_runner_mode = runner_act.runner_mode;
+			adv_set_mode(&adv_act);                    //???????????g?
+      adv_feedback_update(&adv_act);            //??????????
+      adv_control_loop(&adv_act);
+			vTaskDelay(ADV_CONTROL_TIME_MS);
+			adv_act.last_adv_mode = adv_act.adv_mode;
 			
 
     }
@@ -136,25 +137,25 @@ void runner_task(void const * argument)
   * @param[out]     runner_act_init:"runner_act"???????.
   * @retval         none
   */
-static void runner_init(runner_act_t *runner_act_init)
+static void adv_init(adv_act_t *adv_act_init)
 {
-	  if (runner_act_init == NULL)
+	  if (adv_act_init == NULL)
     {
         return;
     }
 
     //runner motor speed PID
     //????????pid?
-		runner_act_init->last_runner_mode = runner_act_init->runner_mode = RUNNER_DOWN;
-		const static fp32 motor_speed_pid[3] = {RUNNER_MOTOR_SPEED_PID_KP, RUNNER_MOTOR_SPEED_PID_KI, RUNNER_MOTOR_SPEED_PID_KD};
+		adv_act_init->last_adv_mode = adv_act_init->adv_mode = ADV_FREE;
+		const static fp32 motor_speed_pid[3] = {ADV_MOTOR_SPEED_PID_KP, ADV_MOTOR_SPEED_PID_KI, ADV_MOTOR_SPEED_PID_KD};
 			
-		runner_act_init->RC_data = get_remote_control_point();
-		runner_act_init->motor_data.runner_motor_measure = get_motor_measure_point(2, CAN_RUNNER_ID);
+		adv_act_init->RC_data = get_remote_control_point();
+		adv_act_init->motor_data.adv_motor_measure = get_motor_measure_point(2, CAN_ADV_ID);
 		
-		runner_PID_init(&runner_act_init->runner_angle_pid, RUNNER_MOTOR_ANGLE_PID_MAX_OUT, RUNNER_MOTOR_ANGLE_PID_MAX_IOUT, RUNNER_MOTOR_ANGLE_PID_KP, RUNNER_MOTOR_ANGLE_PID_KI, RUNNER_MOTOR_ANGLE_PID_KD);
-		PID_init(&runner_act_init->runner_speed_pid, PID_POSITION, motor_speed_pid, RUNNER_MOTOR_SPEED_PID_MAX_OUT, RUNNER_MOTOR_SPEED_PID_MAX_IOUT);
+		adv_PID_init(&adv_act_init->adv_angle_pid, ADV_MOTOR_ANGLE_PID_MAX_OUT, ADV_MOTOR_ANGLE_PID_MAX_IOUT, ADV_MOTOR_ANGLE_PID_KP, ADV_MOTOR_ANGLE_PID_KI, ADV_MOTOR_ANGLE_PID_KD);
+		PID_init(&adv_act_init->adv_speed_pid, PID_POSITION, motor_speed_pid, ADV_MOTOR_SPEED_PID_MAX_OUT, ADV_MOTOR_SPEED_PID_MAX_IOUT);
 		
-    runner_feedback_update(runner_act_init);
+    adv_feedback_update(adv_act_init);
 		
 }
 
@@ -168,35 +169,47 @@ static void runner_init(runner_act_t *runner_act_init)
   * @param[out]     gimbal_set_mode:"gimbal_control"???????.
   * @retval         none
   */
-static void runner_set_mode(runner_act_t *runner_act_mode)
+static void adv_set_mode(adv_act_t *adv_act_mode)
 {
-    if (runner_act_mode == NULL)
+    if (adv_act_mode == NULL)
     {
         return;
-    }
-		if (switch_is_down(runner_act_mode->RC_data->rc.s[0]))  
+    }	
+		
+		if (switch_is_down(adv_act_mode->RC_data->rc.s[0]))  
+		//ÓÒ²¦¸ËÏÂµ²£¬ÍÆ½ø»ú¹¹×ÔÓÉ£¨×ÔËø£©×´Ì¬
     {
-			runner_act_mode->runner_mode = RUNNER_DOWN;
+			adv_act_mode->adv_mode = ADV_FREE;
 		}
 		else
 		{
-			if (switch_is_up(runner_act_mode->RC_data->rc.s[1]) && runner_act_mode->last_runner_mode == RUNNER_DOWN)
+			if (switch_is_down(adv_act_mode->RC_data->rc.s[1]) 
+					&& switch_is_mid(last_s_adv) 
+					&& adv_act_mode->adv_mode != ADV_MOVE_B
+					&& adv_act_mode->last_adv_mode != ADV_LOCK_B)
+			//ÏÂ²¦Ò»´Î£¬ÇÒÉÏÒ»´Î²»ÔÚºó·½ËøËÀ£¬ÍÆ½ø»ú¹¹½øÈëºóÍË×´Ì¬
 			{
-				runner_act_mode->runner_mode = RUNNER_INIT;
+				adv_act_mode->adv_mode = ADV_MOVE_B;
 			}
-			else if (switch_is_up(runner_act_mode->RC_data->rc.s[1]) && runner_act_mode->last_runner_mode == RUNNER_READY)
+			else if(switch_is_down(adv_act_mode->RC_data->rc.s[1]) 
+							&& switch_is_mid(last_s_adv) 
+							&& adv_act_mode->adv_mode != ADV_MOVE_F
+							&& adv_act_mode->last_adv_mode != ADV_LOCK_F)
+			//ÔÙÏÂ²¦Ò»´Î£¬ÇÒÉÏÒ»´Î²»ÔÚÇ°·½ËøËÀ£¬ºáÒÆ»ú¹¹½øÈëÇ°ÍÆ×´Ì¬
 			{
-				runner_act_mode->runner_mode = RUNNER_LOAD;
+				adv_act_mode->adv_mode = ADV_MOVE_F;			
 			}
-			else if (switch_is_down(runner_act_mode->RC_data->rc.s[1]) && runner_act_mode->last_runner_mode == RUNNER_REACH)
+			else if(adv_act_mode->motor_data.adv_motor_measure->given_current > 5000 )
+			//µ½´ïÇ°¼«ÏÞÎ»ÖÃ£¬µç»ú¶Â×ª£¬µçÁ÷Ôö´óµ½Ò»¶¨³Ì¶È£¬×Ô¶¯Ëø½ô
 			{
-				runner_act_mode->runner_mode = RUNNER_READY;
-				runner_act_mode->runner_mode = RUNNER_READY;
-			}
-			
+				adv_act_mode->adv_mode = ADV_LOCK_F;
+			}	
+			else if(adv_act_mode->motor_data.adv_motor_measure->given_current < -5000 )
+			//µ½´ïºó¼«ÏÞÎ»ÖÃ£¬µç»ú¶Â×ª£¬µçÁ÷Ôö´óµ½Ò»¶¨³Ì¶È£¬×Ô¶¯Ëø½ô
+			{
+				adv_act_mode->adv_mode = ADV_LOCK_B;
+			}	
 		}
-		
-
 }
 
 /**
@@ -205,19 +218,19 @@ static void runner_set_mode(runner_act_t *runner_act_mode)
   * @retval         none
   */
 /**
-  * @brief          ???_?????????£????????????y???????????????
+  * @brief          ???_?????????????????????y???????????????
   * @param[out]     runner_feedback_update:"runner_act"???????.
   * @retval         none
   */
 
-static void runner_feedback_update(runner_act_t *runner_act_update)
+static void adv_feedback_update(adv_act_t *adv_act_update)
 {
-	if (runner_act_update == NULL)
+	if (adv_act_update == NULL)
     {
         return;
     }
-		runner_act_update->motor_data.motor_angle = ECD2ANGLE * (runner_act_update->motor_data.runner_motor_measure->ecd + ECD_RANGE * runner_act_update->motor_data.runner_motor_measure->ecd_count - ECD_OFFSET);
-		runner_act_update->motor_data.motor_speed = runner_act_update->motor_data.runner_motor_measure->speed_rpm;
+		adv_act_update->motor_data.motor_speed = adv_act_update->motor_data.adv_motor_measure->speed_rpm;
+		last_s_adv = adv_act_update->RC_data->rc.s[1];
 }
 
 /**
@@ -231,34 +244,33 @@ static void runner_feedback_update(runner_act_t *runner_act_update)
   * @retval         none
   */
 
-static void runner_control_loop(runner_act_t *runner_act_control,gimbal_act_t *gimbal_act_control)
+static void adv_control_loop(adv_act_t *adv_act_control)
 {
-	if (runner_act_control->runner_mode == RUNNER_DOWN)
+	static fp32 motor_speed = 0;
+	if (adv_act_control->adv_mode == ADV_FREE || adv_act_control->adv_mode == ADV_LOCK_F || adv_act_control->adv_mode == ADV_LOCK_B)
+	//×ÔÓÉ×´Ì¬¡¢Ç°¶Ë×ÔËø¡¢ºó¶Ë×ÔËø£¬²»·¢µçÁ÷
 		{
-			runner_act_control->motor_data.give_current = 0;
+			adv_act_control->motor_data.give_current = 0;
 		}
 	else 
 	{
-		if (runner_act_control->runner_mode == RUNNER_INIT)
-			runner_act_control->motor_data.motor_angle_set = (fp32)((int16_t)(runner_act_control->motor_data.motor_angle / TURN_ANGLE) + 1) * TURN_ANGLE+ANGLE_INIT;
-		else if (runner_act_control->runner_mode == RUNNER_LOAD)
-			runner_act_control->motor_data.motor_angle_set += TURN_ANGLE;
-		runner_act_control->motor_data.motor_speed_set = runner_PID_calc(&runner_act_control->runner_angle_pid, 
-																											runner_act_control->motor_data.motor_angle, 
-																											runner_act_control->motor_data.motor_angle_set, 
-																											runner_act_control->motor_data.motor_speed);
-		runner_act_control->motor_data.give_current = (int16_t)PID_calc(&runner_act_control->runner_speed_pid, runner_act_control->motor_data.motor_speed, runner_act_control->motor_data.motor_speed_set);
-		if (runner_act_control->runner_mode != RUNNER_REACH && runner_act_control->runner_mode != RUNNER_READY)
-			runner_act_control->runner_mode = RUNNER_TURNING;
+		if (adv_act_control->adv_mode == ADV_MOVE_F)
+		//ÏòÇ°ÒÆ¶¯×´Ì¬,×ó²¦¸ËÃ¿ÏÂ²¦Ò»´Î»»Ò»´ÎÔË¶¯·½Ïò
+		{
+			motor_speed = ADV_SET_SPEED;
+			adv_act_control->motor_data.motor_speed_set = motor_speed;
+			adv_act_control->motor_data.give_current = (int16_t)PID_calc(&adv_act_control->adv_speed_pid, 
+																												adv_act_control->motor_data.motor_speed, adv_act_control->motor_data.motor_speed_set);
+		}
+		else if(adv_act_control->adv_mode == ADV_MOVE_B)
+		//ÏòºóÒÆ¶¯×´Ì¬
+		{
+			motor_speed = -ADV_SET_SPEED;//·¢ËÍµÈ´ó·´ÏòµçÁ÷
+			adv_act_control->motor_data.motor_speed_set = motor_speed;
+			adv_act_control->motor_data.give_current = (int16_t)PID_calc(&adv_act_control->adv_speed_pid, 
+																												adv_act_control->motor_data.motor_speed, adv_act_control->motor_data.motor_speed_set);			
+		}
 	}
-
-	
-	if (runner_act_control->runner_mode == RUNNER_TURNING && fabs(runner_act_control->motor_data.motor_angle_set - runner_act_control->motor_data.motor_angle) < ANGLE_DIFF && 
-		fabs(runner_act_control->motor_data.motor_speed) < SPEED_READY)
-		runner_act_control->runner_mode = RUNNER_REACH;
-	
-	CAN_cmd_can2(gimbal_act_control->motor_data.give_current,runner_act_control->motor_data.give_current,0);
-
 }
 
 
@@ -272,9 +284,9 @@ static void runner_control_loop(runner_act_t *runner_act_control,gimbal_act_t *g
   * @param[out]     runner_act_control:"runner_act"???????.
   * @retval         none
   */
-uint8_t get_runner_mode(void)
+uint8_t get_adv_mode(void)
 {
-	return runner_act.runner_mode;
+	return adv_act.adv_mode;
 }
 /**
   * @brief          "gimbal_control" valiable initialization, include pid initialization, remote control data point initialization, gimbal motors
@@ -287,7 +299,7 @@ uint8_t get_runner_mode(void)
   * @param[out]     gimbal_init:"gimbal_control"???????.
   * @retval         none
   */
-static void runner_PID_init(runner_PID_t *pid, fp32 maxout, fp32 max_iout, fp32 kp, fp32 ki, fp32 kd)
+static void adv_PID_init(adv_PID_t *pid, fp32 maxout, fp32 max_iout, fp32 kp, fp32 ki, fp32 kd)
 {
     if (pid == NULL)
     {
@@ -305,11 +317,11 @@ static void runner_PID_init(runner_PID_t *pid, fp32 maxout, fp32 max_iout, fp32 
 }
 
 
-static fp32 runner_PID_calc(runner_PID_t *pid, fp32 get, fp32 set, fp32 error_delta)
+static fp32 adv_PID_calc(adv_PID_t *pid, fp32 get, fp32 set, fp32 error_delta)
 {
     fp32 err;
     if (pid == NULL)
-    {
+    {             
         return 0.0f;
     }
     pid->get = get;

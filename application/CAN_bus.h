@@ -35,8 +35,8 @@ typedef enum
 	  CAN_TX_REAR_ID = 0X1FF,
 		CAN_TX_FRONT_ID = 0X200,
     CAN_YAW_ID = 0x205,	
-		CAN_RUNNER_ID = 0x206,
-	  CAN_PITCH_ID = 0x207,
+		CAN_TRANS_ID = 0x206,
+	  CAN_ADV_ID = 0x207,
 
 } can1_msg_id_e;
 

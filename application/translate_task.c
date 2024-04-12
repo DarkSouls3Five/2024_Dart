@@ -1,11 +1,11 @@
 /**
   ****************************(C) COPYRIGHT 2019 DJI****************************
-  * @file       runner_task.c/h
+  * @file       translate_task.c/h
   * @brief      
   * @note       
   * @history
   *  Version    Date            Author          Modification
-  *  V1.0.0     Oct-15-2023     Cherryblossomnight              1. done
+  *  V1.0.0     April-12-2023   Ignis             1. done
   *
   @verbatim
   ==============================================================================
@@ -15,13 +15,14 @@
   ****************************(C) COPYRIGHT 2019 DJI****************************
   */
 
-#include "runner_task.h"
+#include "translate_task.h"
 #include "main.h"
 #include "cmsis_os.h"
 #include "CAN_bus.h"
 #include "remote_control.h"
 #include "user_lib.h"
 #include "gimbal_task.h"
+#include "advance_task.h"
 
 
 double fabs(double a)
@@ -43,7 +44,7 @@ double fabs(double a)
   * @param[out]     runner_act_init:"runner_act"???????.
   * @retval         none
   */
-static void runner_init(runner_act_t *runner_act_init);
+static void trans_init(trans_act_t *trans_act_init);
 
 /**
   * @brief          set gimbal control mode, mainly call 'gimbal_behaviour_mode_set' function
@@ -55,7 +56,7 @@ static void runner_init(runner_act_t *runner_act_init);
   * @param[out]     gimbal_set_mode:"gimbal_control"???????.
   * @retval         none
   */
-static void runner_set_mode(runner_act_t *runner_act_mode);
+static void trans_set_mode(trans_act_t *trans_act_mode);
 /**
   * @brief          runner some measure data updata, such as motor enconde, euler angle, gyro
   * @param[out]     runner_feedback_update: "runner_act" valiable point
@@ -66,7 +67,7 @@ static void runner_set_mode(runner_act_t *runner_act_mode);
   * @param[out]     runner_feedback_update:"runner_act"???????.
   * @retval         none
   */
-static void runner_feedback_update(runner_act_t *runner_act_init);
+static void trans_feedback_update(trans_act_t *trans_act_init);
 
 /**
   * @brief          set runner control set-point.
@@ -78,7 +79,7 @@ static void runner_feedback_update(runner_act_t *runner_act_init);
   * @param[out]     runner_act_control:"runner_act"???????.
   * @retval         none
   */
-static void runner_control_loop(runner_act_t *runner_act_control,gimbal_act_t *gimbal_act_control);
+static void trans_control_loop(trans_act_t *trans_act_control,gimbal_act_t *gimbal_act_control,adv_act_t *adv_act_contorl);
 /**
   * @brief          "gimbal_control" valiable initialization, include pid initialization, remote control data point initialization, gimbal motors
   *                 data point initialization, and gyro sensor angle point initialization.
@@ -90,36 +91,38 @@ static void runner_control_loop(runner_act_t *runner_act_control,gimbal_act_t *g
   * @param[out]     gimbal_init:"gimbal_control"???????.
   * @retval         none
   */
-static void runner_PID_init(runner_PID_t *pid, fp32 maxout, fp32 max_iout, fp32 kp, fp32 ki, fp32 kd);
-static fp32 runner_PID_calc(runner_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
+static void trans_PID_init(trans_PID_t *pid, fp32 maxout, fp32 max_iout, fp32 kp, fp32 ki, fp32 kd);
+static fp32 trans_PID_calc(trans_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
 
-runner_act_t runner_act;
+trans_act_t trans_act;
+int last_s_trans; //用于读取上一次左拨杆数据
 extern gimbal_act_t gimbal_act;
+extern adv_act_t adv_act;
 /**
   * @brief          runner_task
   * @param[in]      pvParameters: NULL
   * @retval         none
   */
 /**
-  * @brief          舵机任务
+  * @brief          横移机构任务
   * @param[in]      pvParameters: NULL
   * @retval         none
   */
-void runner_task(void const * argument)
+void translate_task(void const * argument)
 {
 	 //wait a time 
     //????h?????
-    vTaskDelay(RUNNER_TASK_INIT_TIME);
+    vTaskDelay(TRANS_TASK_INIT_TIME);
     //chassis init
     //?????'??
-    runner_init(&runner_act);
+    trans_init(&trans_act);
     while(1)
     {
-			runner_set_mode(&runner_act);                    //???????????g?
-      runner_feedback_update(&runner_act);            //??????????
-      runner_control_loop(&runner_act,&gimbal_act);
-			vTaskDelay(RUNNER_CONTROL_TIME_MS);
-			runner_act.last_runner_mode = runner_act.runner_mode;
+			trans_set_mode(&trans_act);                    //???????????g?
+			trans_feedback_update(&trans_act);            //??????????
+      trans_control_loop(&trans_act,&gimbal_act,&adv_act);
+			vTaskDelay(TRANS_CONTROL_TIME_MS);
+			trans_act.last_trans_mode = trans_act.trans_mode;
 			
 
     }
@@ -136,25 +139,25 @@ void runner_task(void const * argument)
   * @param[out]     runner_act_init:"runner_act"???????.
   * @retval         none
   */
-static void runner_init(runner_act_t *runner_act_init)
+static void trans_init(trans_act_t *trans_act_init)
 {
-	  if (runner_act_init == NULL)
+	  if (trans_act_init == NULL)
     {
         return;
     }
 
     //runner motor speed PID
     //????????pid?
-		runner_act_init->last_runner_mode = runner_act_init->runner_mode = RUNNER_DOWN;
-		const static fp32 motor_speed_pid[3] = {RUNNER_MOTOR_SPEED_PID_KP, RUNNER_MOTOR_SPEED_PID_KI, RUNNER_MOTOR_SPEED_PID_KD};
+		trans_act_init->last_trans_mode = trans_act_init->trans_mode = TRANS_FREE;
+		const static fp32 motor_speed_pid[3] = {TRANS_MOTOR_SPEED_PID_KP, TRANS_MOTOR_SPEED_PID_KI, TRANS_MOTOR_SPEED_PID_KD};
 			
-		runner_act_init->RC_data = get_remote_control_point();
-		runner_act_init->motor_data.runner_motor_measure = get_motor_measure_point(2, CAN_RUNNER_ID);
+		trans_act_init->RC_data = get_remote_control_point();
+		trans_act_init->motor_data.trans_motor_measure = get_motor_measure_point(2, CAN_TRANS_ID);
 		
-		runner_PID_init(&runner_act_init->runner_angle_pid, RUNNER_MOTOR_ANGLE_PID_MAX_OUT, RUNNER_MOTOR_ANGLE_PID_MAX_IOUT, RUNNER_MOTOR_ANGLE_PID_KP, RUNNER_MOTOR_ANGLE_PID_KI, RUNNER_MOTOR_ANGLE_PID_KD);
-		PID_init(&runner_act_init->runner_speed_pid, PID_POSITION, motor_speed_pid, RUNNER_MOTOR_SPEED_PID_MAX_OUT, RUNNER_MOTOR_SPEED_PID_MAX_IOUT);
+		trans_PID_init(&trans_act_init->trans_angle_pid, TRANS_MOTOR_ANGLE_PID_MAX_OUT, TRANS_MOTOR_ANGLE_PID_MAX_IOUT, TRANS_MOTOR_ANGLE_PID_KP, TRANS_MOTOR_ANGLE_PID_KI, TRANS_MOTOR_ANGLE_PID_KD);
+		PID_init(&trans_act_init->trans_speed_pid, PID_POSITION, motor_speed_pid, TRANS_MOTOR_SPEED_PID_MAX_OUT, TRANS_MOTOR_SPEED_PID_MAX_IOUT);
 		
-    runner_feedback_update(runner_act_init);
+    trans_feedback_update(trans_act_init);
 		
 }
 
@@ -168,35 +171,48 @@ static void runner_init(runner_act_t *runner_act_init)
   * @param[out]     gimbal_set_mode:"gimbal_control"???????.
   * @retval         none
   */
-static void runner_set_mode(runner_act_t *runner_act_mode)
+static void trans_set_mode(trans_act_t *trans_act_mode)
 {
-    if (runner_act_mode == NULL)
+    if (trans_act_mode == NULL)
     {
         return;
     }
-		if (switch_is_down(runner_act_mode->RC_data->rc.s[0]))  
+
+		
+		if (switch_is_down(trans_act_mode->RC_data->rc.s[0]))  
+		//右拨杆下挡，横移机构自由状态
     {
-			runner_act_mode->runner_mode = RUNNER_DOWN;
+			trans_act_mode->trans_mode = TRANS_FREE;
 		}
 		else
 		{
-			if (switch_is_up(runner_act_mode->RC_data->rc.s[1]) && runner_act_mode->last_runner_mode == RUNNER_DOWN)
+			if (switch_is_up(trans_act_mode->RC_data->rc.s[1]) 
+					&& switch_is_mid(last_s_trans) 
+					&& trans_act_mode->trans_mode != TRANS_MOVE_L 
+					&& trans_act_mode->last_trans_mode != TRANS_LOCK_L )
+			//上拨一次，且上一次不在左边锁死，横移机构进入向左移动状态
 			{
-				runner_act_mode->runner_mode = RUNNER_INIT;
+				trans_act_mode->trans_mode = TRANS_MOVE_L;
 			}
-			else if (switch_is_up(runner_act_mode->RC_data->rc.s[1]) && runner_act_mode->last_runner_mode == RUNNER_READY)
+			else if(switch_is_up(trans_act_mode->RC_data->rc.s[1]) 
+							&& switch_is_mid(last_s_trans) 
+							&& trans_act_mode->trans_mode != TRANS_MOVE_R 
+							&& trans_act_mode->last_trans_mode != TRANS_LOCK_R)
+			//再上拨一次，且上一次不在右边锁死，横移机构进入向右移动状态
 			{
-				runner_act_mode->runner_mode = RUNNER_LOAD;
+				trans_act_mode->trans_mode = TRANS_MOVE_R;			
 			}
-			else if (switch_is_down(runner_act_mode->RC_data->rc.s[1]) && runner_act_mode->last_runner_mode == RUNNER_REACH)
+			else if(trans_act_mode->motor_data.trans_motor_measure->given_current > 5000)
+			//到达左极限位置，电机堵转，电流增大到一定程度，在左边锁紧
 			{
-				runner_act_mode->runner_mode = RUNNER_READY;
-				runner_act_mode->runner_mode = RUNNER_READY;
-			}
-			
-		}
-		
-
+				trans_act_mode->trans_mode = TRANS_LOCK_L;
+			}	
+			else if(trans_act_mode->motor_data.trans_motor_measure->given_current < -5000)
+			//到达右极限位置，电机堵转，电流增大到一定程度，在右边锁紧
+			{
+				trans_act_mode->trans_mode = TRANS_LOCK_R;
+			}	
+		}	
 }
 
 /**
@@ -210,14 +226,14 @@ static void runner_set_mode(runner_act_t *runner_act_mode)
   * @retval         none
   */
 
-static void runner_feedback_update(runner_act_t *runner_act_update)
+static void trans_feedback_update(trans_act_t *trans_act_update)
 {
-	if (runner_act_update == NULL)
+	if (trans_act_update == NULL)
     {
         return;
     }
-		runner_act_update->motor_data.motor_angle = ECD2ANGLE * (runner_act_update->motor_data.runner_motor_measure->ecd + ECD_RANGE * runner_act_update->motor_data.runner_motor_measure->ecd_count - ECD_OFFSET);
-		runner_act_update->motor_data.motor_speed = runner_act_update->motor_data.runner_motor_measure->speed_rpm;
+		trans_act_update->motor_data.motor_speed = trans_act_update->motor_data.trans_motor_measure->speed_rpm;
+		last_s_trans = trans_act_update->RC_data->rc.s[1];
 }
 
 /**
@@ -231,33 +247,44 @@ static void runner_feedback_update(runner_act_t *runner_act_update)
   * @retval         none
   */
 
-static void runner_control_loop(runner_act_t *runner_act_control,gimbal_act_t *gimbal_act_control)
+static void trans_control_loop(trans_act_t *trans_act_control,gimbal_act_t *gimbal_act_control,adv_act_t *adv_act_control)
 {
-	if (runner_act_control->runner_mode == RUNNER_DOWN)
+	//
+	static fp32 motor_speed = 0;
+	
+	if (trans_act_control->trans_mode == TRANS_FREE)
+	//自由状态
 		{
-			runner_act_control->motor_data.give_current = 0;
+			trans_act_control->motor_data.give_current = 0;
 		}
 	else 
 	{
-		if (runner_act_control->runner_mode == RUNNER_INIT)
-			runner_act_control->motor_data.motor_angle_set = (fp32)((int16_t)(runner_act_control->motor_data.motor_angle / TURN_ANGLE) + 1) * TURN_ANGLE+ANGLE_INIT;
-		else if (runner_act_control->runner_mode == RUNNER_LOAD)
-			runner_act_control->motor_data.motor_angle_set += TURN_ANGLE;
-		runner_act_control->motor_data.motor_speed_set = runner_PID_calc(&runner_act_control->runner_angle_pid, 
-																											runner_act_control->motor_data.motor_angle, 
-																											runner_act_control->motor_data.motor_angle_set, 
-																											runner_act_control->motor_data.motor_speed);
-		runner_act_control->motor_data.give_current = (int16_t)PID_calc(&runner_act_control->runner_speed_pid, runner_act_control->motor_data.motor_speed, runner_act_control->motor_data.motor_speed_set);
-		if (runner_act_control->runner_mode != RUNNER_REACH && runner_act_control->runner_mode != RUNNER_READY)
-			runner_act_control->runner_mode = RUNNER_TURNING;
+		if (trans_act_control->trans_mode == TRANS_MOVE_R)
+		//向右移动状态,左拨杆每上拨一次换一次运动方向
+		{
+			motor_speed = -TRANS_SET_SPEED;
+			trans_act_control->motor_data.motor_speed_set = motor_speed;
+			trans_act_control->motor_data.give_current = (int16_t)PID_calc(&trans_act_control->trans_speed_pid, 
+																												trans_act_control->motor_data.motor_speed, trans_act_control->motor_data.motor_speed_set);
+		}
+		else if(trans_act_control->trans_mode == TRANS_MOVE_L)
+		//向左移动状态
+		{
+			motor_speed = TRANS_SET_SPEED;//发送等大反向电流
+			trans_act_control->motor_data.motor_speed_set = motor_speed;
+			trans_act_control->motor_data.give_current = (int16_t)PID_calc(&trans_act_control->trans_speed_pid, 
+																												trans_act_control->motor_data.motor_speed, trans_act_control->motor_data.motor_speed_set);			
+		}
+		else if (trans_act_control->trans_mode == TRANS_LOCK_L || trans_act_control->trans_mode == TRANS_LOCK_R)
+		//锁死状态
+		{
+			trans_act_control->motor_data.motor_speed_set = 0;
+			trans_act_control->motor_data.give_current = (int16_t)PID_calc(&trans_act_control->trans_speed_pid, 
+																												trans_act_control->motor_data.motor_speed, trans_act_control->motor_data.motor_speed_set);
+		}
 	}
-
 	
-	if (runner_act_control->runner_mode == RUNNER_TURNING && fabs(runner_act_control->motor_data.motor_angle_set - runner_act_control->motor_data.motor_angle) < ANGLE_DIFF && 
-		fabs(runner_act_control->motor_data.motor_speed) < SPEED_READY)
-		runner_act_control->runner_mode = RUNNER_REACH;
-	
-	CAN_cmd_can2(gimbal_act_control->motor_data.give_current,runner_act_control->motor_data.give_current,0);
+	CAN_cmd_can2(gimbal_act_control->motor_data.give_current,trans_act_control->motor_data.give_current,adv_act_control->motor_data.give_current);
 
 }
 
@@ -272,9 +299,9 @@ static void runner_control_loop(runner_act_t *runner_act_control,gimbal_act_t *g
   * @param[out]     runner_act_control:"runner_act"???????.
   * @retval         none
   */
-uint8_t get_runner_mode(void)
+uint8_t get_trans_mode(void)
 {
-	return runner_act.runner_mode;
+	return trans_act.trans_mode;
 }
 /**
   * @brief          "gimbal_control" valiable initialization, include pid initialization, remote control data point initialization, gimbal motors
@@ -287,7 +314,7 @@ uint8_t get_runner_mode(void)
   * @param[out]     gimbal_init:"gimbal_control"???????.
   * @retval         none
   */
-static void runner_PID_init(runner_PID_t *pid, fp32 maxout, fp32 max_iout, fp32 kp, fp32 ki, fp32 kd)
+static void trans_PID_init(trans_PID_t *pid, fp32 maxout, fp32 max_iout, fp32 kp, fp32 ki, fp32 kd)
 {
     if (pid == NULL)
     {
@@ -305,7 +332,7 @@ static void runner_PID_init(runner_PID_t *pid, fp32 maxout, fp32 max_iout, fp32 
 }
 
 
-static fp32 runner_PID_calc(runner_PID_t *pid, fp32 get, fp32 set, fp32 error_delta)
+static fp32 trans_PID_calc(trans_PID_t *pid, fp32 get, fp32 set, fp32 error_delta)
 {
     fp32 err;
     if (pid == NULL)

@@ -25,7 +25,7 @@
 #include "fric_task.h"
 
 #define SERVO_PULL_PWM   2040	//舵机蓄力
-#define SERVO_PUSH_PWM   1000	//舵机击发
+#define SERVO_PUSH_PWM   950	//舵机击发
 
 
 

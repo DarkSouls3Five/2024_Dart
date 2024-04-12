@@ -686,11 +686,6 @@
               <FilePath>..\application\test_task.c</FilePath>
             </File>
             <File>
-              <FileName>servo_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\servo_task.c</FilePath>
-            </File>
-            <File>
               <FileName>CAN_bus.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\CAN_bus.c</FilePath>
@@ -699,11 +694,6 @@
               <FileName>remote_control.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\remote_control.c</FilePath>
-            </File>
-            <File>
-              <FileName>runner_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\runner_task.c</FilePath>
             </File>
             <File>
               <FileName>debug.c</FileName>
@@ -729,6 +719,16 @@
               <FileName>laser_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\laser_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>translate_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\translate_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>advance_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\advance_task.c</FilePath>
             </File>
           </Files>
         </Group>

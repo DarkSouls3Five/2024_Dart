@@ -142,14 +142,14 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 					//detect_hook(CHASSIS_MOTOR1_TOE + i);					
 					break;
 				}
-				case CAN_PITCH_ID:
+				case CAN_TRANS_ID:
 				{
 					static uint8_t i = 7;
 					get_motor_measure(&motor_data[i], rx_data);		
 					//detect_hook(CHASSIS_MOTOR1_TOE + i);					
 					break;
 				}
-				case CAN_RUNNER_ID:
+				case CAN_ADV_ID:
 				{
 					static uint8_t i = 8;
 					get_motor_measure(&motor_data[i], rx_data);		
@@ -300,9 +300,9 @@ const motor_measure_t *get_motor_measure_point(uint8_t bus, uint16_t id)
 	{
 		if (id == CAN_YAW_ID)	
 			return &motor_data[6];
-		else if (id == CAN_PITCH_ID)	
+		else if (id == CAN_TRANS_ID)	
 			return &motor_data[7];
-		else if (id == CAN_RUNNER_ID)
+		else if (id == CAN_ADV_ID)
 			return &motor_data[8];
 	}
 	else
