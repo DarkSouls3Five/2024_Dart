@@ -96,10 +96,7 @@ void fric_task(void const * argument)
     fric_init(&fric_act);
     //make sure all chassis motor is online
     //???????????????
-//    while (toe_is_error(CHASSIS_MOTOR1_TOE) || toe_is_error(CHASSIS_MOTOR2_TOE) || toe_is_error(CHASSIS_MOTOR3_TOE) || toe_is_error(CHASSIS_MOTOR4_TOE) || toe_is_error(DBUS_TOE))
-//    {
-//        vTaskDelay(CHASSIS_CONTROL_TIME_MS);
-//    }
+
 	  while(1)
 		{
 			  //set gric control mode

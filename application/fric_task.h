@@ -30,8 +30,8 @@
 #define FRIC_RIGHT_PID_MAX_IOUT  5000.0f
 
 
-
-#define FRIC_SET_SPEED 1000.0f//7000.0f//7300.0f//7000.0f//5000.0f
+//³õËÙ¶È13.5-12.9,6000.0f
+#define FRIC_SET_SPEED 6000.0f//7000.0f//7300.0f//7000.0f//5000.0f
 
 typedef enum
 {

@@ -1,18 +1,45 @@
 /**
   ****************************(C) COPYRIGHT 2019 DJI****************************
-  * @file       runner_task.c/h
-  * @brief      
-  * @note       
+  * @file       advance_task.c/h
+  * @brief      advance control task
+								推板发射飞镖任务     
+	
   * @history
   *  Version    Date            Author          Modification
-  *  V1.0.0     April-12-2024   Ignis              1. done
-  *
+  *  V1.0.0     Apr-12-2024   	Ignis           1. 基本功能实现
+  *  V1.0.1     Apr-15-2024   	Ignis           1. 增加比赛时云台手自动发射模式
+	* @note  
+  ==============================================================================
+	*	赛场上飞镖控制全流程：
+	
+	*	一、首局三分钟准备时间-场地人员
+	*		1、放置好飞镖系统:
+	* 		将飞镖架搬到发射站内 -> 定位，打开磁吸开关
+	*		2、开电，装填初始化:
+	*			连接场地主控 -> 上电 -> 调试模式下（右拨杆中档）控制推进板复位到后端 -> DOWN模式下（右拨杆下挡）下从发射出口将四枚飞镖装填 
+	*		3、调节Yaw轴位置:
+	*			将滑台推进去 -> DOWN模式（右拨杆下挡）下手动调节Yaw轴位置 -> 调试模式下（右拨杆中档）控制横移机构切换到右锁死位置 -> 把遥控器交给云台手
+	*
+	*	二、比赛中-云台手
+	*		1、第一次发射:
+	*			(1) 手动流程：选手端选择打开闸门 -> 切到比赛模式（右拨杆上挡），开摩擦轮 -> 闸门完全打开 -> 向前推右摇杆维持1s，发射2枚飞镖
+	*			(2) 自动流程：推进板运动到前极限位置，射出两枚飞镖 -> 推进板复位到后极限位置 -> 横移机构切换到下一组飞镖
+	*			(3)	手动流程：舱门开始关闭时，切到右拨杆中档关掉摩擦轮。
+	*		2、第二次发射：
+	*			(1) 手动流程：选手端选择打开闸门 -> 切到比赛模式（右拨杆上挡），开摩擦轮 -> 闸门完全打开 -> 向前推右摇杆维持1s，发射2枚飞镖
+	*			(2) 自动流程：推进板运动到前极限位置，射出两枚飞镖 -> 停在前极限位置
+	*			(3)	手动流程：舱门开始关闭时，切到右拨杆中档关掉摩擦轮。
+	* 
+	* 三、局间三分钟准备时间
+	*		1、场地人员捡飞镖，同时云台手把遥控器拿给场地人员
+	*		2、复位推进板 -> 装填飞镖 -> 手动调节Yaw轴 -> 横移机构切换到右锁死位置 -> 把遥控器交给云台手
+	
+  ==============================================================================
+	
   @verbatim
-  ==============================================================================
 
-  ==============================================================================
   @endverbatim
-  ****************************(C) COPYRIGHT 2019 DJI****************************
+  ****************************(C) COPYRIGHT 2024 TJSP****************************
   */
 
 #include "advance_task.h"
@@ -22,6 +49,7 @@
 #include "remote_control.h"
 #include "user_lib.h"
 #include "gimbal_task.h"
+#include "translate_task.h"
 
 
 //double fabs(double a)
@@ -95,14 +123,16 @@ static fp32 adv_PID_calc(adv_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
 
 adv_act_t adv_act;
 extern gimbal_act_t gimbal_act;
+extern trans_act_t trans_act;
 int last_s_adv;
+int dart_count = 0;//统计发射次数
 /**
   * @brief          runner_task
   * @param[in]      pvParameters: NULL
   * @retval         none
   */
 /**
-  * @brief          舵机任务
+  * @brief          推进机构任务
   * @param[in]      pvParameters: NULL
   * @retval         none
   */
@@ -176,11 +206,32 @@ static void adv_set_mode(adv_act_t *adv_act_mode)
         return;
     }	
 		
-		if (switch_is_down(adv_act_mode->RC_data->rc.s[0]))  
 		//右拨杆下挡，推进机构自由（自锁）状态
+		if (switch_is_down(adv_act_mode->RC_data->rc.s[0]))  
+
     {
 			adv_act_mode->adv_mode = ADV_FREE;
 		}
+
+		//右拨杆上档，开摩擦轮，比赛中云台手操作模式
+		else if(switch_is_up(adv_act_mode->RC_data->rc.s[0]))
+		{	
+			if (adv_act_mode->RC_data->rc.ch[1] > 600 && (trans_act.trans_mode == TRANS_LOCK_R || trans_act.trans_mode == TRANS_LOCK_L))
+			//横移机构到位，右摇杆前推维持1s，发射两枚飞镖
+			{
+				vTaskDelay(1000);
+				if (adv_act_mode->RC_data->rc.ch[1] > 600)
+				{
+					adv_act_mode->adv_mode = ADV_GAME_LAUNCH;
+				}
+			}
+			else if(dart_count==1 && adv_act_mode->adv_mode != ADV_FREE && trans_act.trans_mode != TRANS_LOCK_L)
+			//由0变1代表已经完成两枚飞镖发射，推进板复位
+			{
+				adv_act_mode->adv_mode = ADV_GAME_INIT;
+			}
+		}
+	
 		else
 		{
 			if (switch_is_down(adv_act_mode->RC_data->rc.s[1]) 
@@ -269,6 +320,39 @@ static void adv_control_loop(adv_act_t *adv_act_control)
 			adv_act_control->motor_data.motor_speed_set = motor_speed;
 			adv_act_control->motor_data.give_current = (int16_t)PID_calc(&adv_act_control->adv_speed_pid, 
 																												adv_act_control->motor_data.motor_speed, adv_act_control->motor_data.motor_speed_set);			
+		}
+		else if(adv_act_control->adv_mode == ADV_GAME_LAUNCH)
+		//一次发射2枚飞镖
+		{
+			motor_speed = ADV_SET_SPEED;
+			adv_act_control->motor_data.motor_speed_set = motor_speed;
+			adv_act_control->motor_data.give_current = (int16_t)PID_calc(&adv_act_control->adv_speed_pid, 
+																												adv_act_control->motor_data.motor_speed, adv_act_control->motor_data.motor_speed_set);
+			
+			if(adv_act_control->motor_data.adv_motor_measure->given_current > 5000 )
+			//到达前极限位置，电机堵转，说明前2枚飞镖发射完成
+			{
+				dart_count= 1 ;				
+				if(trans_act.trans_mode == TRANS_LOCK_L)
+				//如果在左边锁紧，说明四枚飞镖全部发射完成，进入FREE状态
+				{
+					adv_act_control->adv_mode = ADV_FREE;
+				}
+			}
+		}
+		else if(adv_act_control->adv_mode == ADV_GAME_INIT)
+		//发射完毕后推进板复位
+		{
+			motor_speed = -ADV_SET_SPEED;
+			adv_act_control->motor_data.motor_speed_set = motor_speed;
+			adv_act_control->motor_data.give_current = (int16_t)PID_calc(&adv_act_control->adv_speed_pid, 
+																												adv_act_control->motor_data.motor_speed, adv_act_control->motor_data.motor_speed_set);
+
+			if(adv_act_control->motor_data.adv_motor_measure->given_current < -5000 )
+			//到达后极限位置，电机堵转，说明推进板复位完成
+			{
+				adv_act_control->adv_mode = ADV_FREE;//复位结束后进入FREE状态
+			}
 		}
 	}
 }

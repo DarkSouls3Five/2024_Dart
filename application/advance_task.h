@@ -10,7 +10,7 @@
 
 #define ADV_MOTOR_SPEED_PID_KP 10.0f
 #define ADV_MOTOR_SPEED_PID_KI 0.0f
-#define ADV_MOTOR_SPEED_PID_KD 0.0f
+#define ADV_MOTOR_SPEED_PID_KD -0.1f
 
 #define ADV_MOTOR_SPEED_PID_MAX_OUT 8000.f
 #define ADV_MOTOR_SPEED_PID_MAX_IOUT 200.0f
@@ -22,7 +22,7 @@
 #define ADV_MOTOR_ANGLE_PID_MAX_OUT 70.0f
 #define ADV_MOTOR_ANGLE_PID_MAX_IOUT 5.0f
 
-#define ADV_SET_SPEED 10000.0f
+#define ADV_SET_SPEED 7000.0f
 
 typedef enum
 {
@@ -31,6 +31,9 @@ typedef enum
 	ADV_MOVE_B,
 	ADV_LOCK_F,
 	ADV_LOCK_B,
+	//比赛情况下
+	ADV_GAME_LAUNCH,
+	ADV_GAME_INIT
 	
 } adv_mode_e;
 

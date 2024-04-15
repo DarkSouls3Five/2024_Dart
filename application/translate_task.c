@@ -1,7 +1,7 @@
 /**
   ****************************(C) COPYRIGHT 2019 DJI****************************
   * @file       translate_task.c/h
-  * @brief      
+  * @brief      横移机构切换任务
   * @note       
   * @history
   *  Version    Date            Author          Modification
@@ -98,6 +98,7 @@ trans_act_t trans_act;
 int last_s_trans; //用于读取上一次左拨杆数据
 extern gimbal_act_t gimbal_act;
 extern adv_act_t adv_act;
+extern int dart_count;//记录飞镖发射次数
 /**
   * @brief          runner_task
   * @param[in]      pvParameters: NULL
@@ -178,12 +179,33 @@ static void trans_set_mode(trans_act_t *trans_act_mode)
         return;
     }
 
-		
+		//右拨杆下挡，横移机构自由状态		
 		if (switch_is_down(trans_act_mode->RC_data->rc.s[0]))  
-		//右拨杆下挡，横移机构自由状态
     {
 			trans_act_mode->trans_mode = TRANS_FREE;
+			dart_count = 0; //down时将发射次数清0
 		}
+		
+		//右拨杆上档，开摩擦轮，比赛中云台手操作模式
+		else if(switch_is_up(trans_act_mode->RC_data->rc.s[0]))
+		{
+
+			if(dart_count==1 && adv_act.adv_mode == ADV_FREE)
+			//计数为1说明前两发飞镖发射完毕，ADV_FREE说明推进板复位已完成
+			{
+				if(trans_act_mode->motor_data.trans_motor_measure->given_current > 5000)
+				//到达左极限位置，电机堵转，电流增大到一定程度，在左边锁紧
+				{
+					trans_act_mode->trans_mode = TRANS_LOCK_L;	
+				}
+				else if(trans_act_mode->trans_mode != TRANS_LOCK_L)
+				//若已在左边锁紧则不会进向左移动模式
+				{
+					trans_act_mode->trans_mode = TRANS_MOVE_L;	
+				}
+			}
+		}
+		//右拨杆中档，调试模式
 		else
 		{
 			if (switch_is_up(trans_act_mode->RC_data->rc.s[1]) 
