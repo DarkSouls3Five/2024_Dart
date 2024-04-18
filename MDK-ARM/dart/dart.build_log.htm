@@ -27,11 +27,20 @@ Project File Date:  04/11/2024
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'E:\MDK528\ARM\ARMCC\Bin'
 Build target 'dart'
-compiling fric_task.c...
+compiling gimbal_locked_task.c...
+compiling gimbal_task.c...
+compiling advance_task.c...
+..\application\advance_task.c(404): warning:  #177-D: function "adv_PID_calc"  was declared but never referenced
+  static fp32 adv_PID_calc(adv_PID_t *pid, fp32 get, fp32 set, fp32 error_delta)
+..\application\advance_task.c: 1 warning, 0 errors
+compiling translate_task.c...
+..\application\translate_task.c(357): warning:  #177-D: function "trans_PID_calc"  was declared but never referenced
+  static fp32 trans_PID_calc(trans_PID_t *pid, fp32 get, fp32 set, fp32 error_delta)
+..\application\translate_task.c: 1 warning, 0 errors
 linking...
-Program Size: Code=27084 RO-data=888 RW-data=280 ZI-data=45776  
+Program Size: Code=27088 RO-data=888 RW-data=280 ZI-data=45776  
 FromELF: creating hex file...
-".\dart\dart.axf" - 0 Error(s), 0 Warning(s).
+".\dart\dart.axf" - 0 Error(s), 2 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -54,7 +63,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.2.0
-Build Time Elapsed:  00:00:03
+Build Time Elapsed:  00:00:06
 </pre>
 </body>
 </html>
