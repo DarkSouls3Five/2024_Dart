@@ -250,12 +250,12 @@ static void adv_set_mode(adv_act_t *adv_act_mode)
 			{
 				adv_act_mode->adv_mode = ADV_MOVE_F;			
 			}
-			else if(adv_act_mode->motor_data.adv_motor_measure->given_current > 5000 )
+			else if(adv_act_mode->motor_data.adv_motor_measure->given_current > 4500 )
 			//到达前极限位置，电机堵转，电流增大到一定程度，自动锁紧
 			{
 				adv_act_mode->adv_mode = ADV_LOCK_F;
 			}	
-			else if(adv_act_mode->motor_data.adv_motor_measure->given_current < -5000 )
+			else if(adv_act_mode->motor_data.adv_motor_measure->given_current < -4500 )
 			//到达后极限位置，电机堵转，电流增大到一定程度，自动锁紧
 			{
 				adv_act_mode->adv_mode = ADV_LOCK_B;
