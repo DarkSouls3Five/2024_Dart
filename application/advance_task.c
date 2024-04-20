@@ -34,6 +34,10 @@
 	*		1、场地人员捡飞镖，同时云台手把遥控器拿给场地人员
 	*		2、复位推进板 -> 装填飞镖 -> 手动调节Yaw轴 -> 横移机构切换到右锁死位置 -> 把遥控器交给云台手
 	
+	##注意事项！！
+	*		1、云台手拿到遥控器以后出了右拨杆切换上挡和中挡、右摇杆前推，不要进行其他任何操作，否则会破坏调节好的状态！
+	*		2、右拨杆由下挡（down）切换到中挡（调试）时，横移机构必须手动切换一次才能进入锁死模式，否则会维持无力状态！
+	
   ==============================================================================
 	
   @verbatim
@@ -177,6 +181,7 @@ static void adv_init(adv_act_t *adv_act_init)
     //runner motor speed PID
     //????????pid?
 		adv_act_init->last_adv_mode = adv_act_init->adv_mode = ADV_FREE;
+		adv_act_init->adv_dir = ADV_DIR_NONE;
 		const static fp32 motor_speed_pid[3] = {ADV_MOTOR_SPEED_PID_KP, ADV_MOTOR_SPEED_PID_KI, ADV_MOTOR_SPEED_PID_KD};
 			
 		adv_act_init->RC_data = get_remote_control_point();
@@ -213,7 +218,7 @@ static void adv_set_mode(adv_act_t *adv_act_mode)
 			adv_act_mode->adv_mode = ADV_FREE;
 		}
 
-		//右拨杆上档，开摩擦轮，比赛中云台手操作模式
+		//右拨杆上档，开摩擦轮，比赛中云台手操作模式，自动装填与发射
 		else if(switch_is_up(adv_act_mode->RC_data->rc.s[0]))
 		{	
 			if (adv_act_mode->RC_data->rc.ch[1] > 600 && (trans_act.trans_mode == TRANS_LOCK_R || trans_act.trans_mode == TRANS_LOCK_L))
@@ -232,26 +237,35 @@ static void adv_set_mode(adv_act_t *adv_act_mode)
 			}
 		}
 	
+		//右拨杆中挡，手动控制推板运动
 		else
 		{
-			if (switch_is_down(adv_act_mode->RC_data->rc.s[1]) 
+			//左拨杆中挡，推板停止运动
+			if(switch_is_mid(adv_act_mode->RC_data->rc.s[1]))
+			{
+				adv_act_mode->adv_mode = ADV_FREE;				
+			}
+			
+			//下拨一次，且上一次不在后方锁死，上一次运动方向不朝后，推进机构进入后退状态
+			else if (switch_is_down(adv_act_mode->RC_data->rc.s[1]) 
 					&& switch_is_mid(last_s_adv) 
-					&& adv_act_mode->adv_mode != ADV_MOVE_B
+					&& adv_act_mode->adv_dir != ADV_DIR_B
 					&& adv_act_mode->last_adv_mode != ADV_LOCK_B)
-			//下拨一次，且上一次不在后方锁死，推进机构进入后退状态
 			{
 				adv_act_mode->adv_mode = ADV_MOVE_B;
 			}
+			
+			//再下拨一次，且上一次不在前方锁死，上一次运动方向不朝前，横移机构进入前推状态		
 			else if(switch_is_down(adv_act_mode->RC_data->rc.s[1]) 
 							&& switch_is_mid(last_s_adv) 
-							&& adv_act_mode->adv_mode != ADV_MOVE_F
+							&& adv_act_mode->adv_dir != ADV_DIR_F
 							&& adv_act_mode->last_adv_mode != ADV_LOCK_F)
-			//再下拨一次，且上一次不在前方锁死，横移机构进入前推状态
 			{
 				adv_act_mode->adv_mode = ADV_MOVE_F;			
 			}
+			
+			//到达前极限位置，电机堵转，电流增大到一定程度，自动锁紧			
 			else if(adv_act_mode->motor_data.adv_motor_measure->given_current > 4500 )
-			//到达前极限位置，电机堵转，电流增大到一定程度，自动锁紧
 			{
 				adv_act_mode->adv_mode = ADV_LOCK_F;
 			}	
@@ -308,6 +322,7 @@ static void adv_control_loop(adv_act_t *adv_act_control)
 		if (adv_act_control->adv_mode == ADV_MOVE_F)
 		//向前移动状态,左拨杆每下拨一次换一次运动方向
 		{
+			adv_act_control->adv_dir = ADV_DIR_F;//将方向改为朝前
 			motor_speed = ADV_SET_SPEED;
 			adv_act_control->motor_data.motor_speed_set = motor_speed;
 			adv_act_control->motor_data.give_current = (int16_t)PID_calc(&adv_act_control->adv_speed_pid, 
@@ -316,13 +331,14 @@ static void adv_control_loop(adv_act_t *adv_act_control)
 		else if(adv_act_control->adv_mode == ADV_MOVE_B)
 		//向后移动状态
 		{
+			adv_act_control->adv_dir = ADV_DIR_B;//将方向改为朝后
 			motor_speed = -ADV_SET_SPEED;//发送等大反向电流
 			adv_act_control->motor_data.motor_speed_set = motor_speed;
 			adv_act_control->motor_data.give_current = (int16_t)PID_calc(&adv_act_control->adv_speed_pid, 
 																												adv_act_control->motor_data.motor_speed, adv_act_control->motor_data.motor_speed_set);			
 		}
 		else if(adv_act_control->adv_mode == ADV_GAME_LAUNCH)
-		//一次发射2枚飞镖
+		//比赛自动发射状态，一次发射2枚飞镖
 		{
 			motor_speed = ADV_SET_SPEED;
 			adv_act_control->motor_data.motor_speed_set = motor_speed;

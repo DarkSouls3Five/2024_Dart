@@ -26,17 +26,27 @@
 
 typedef enum
 {
-  ADV_FREE,
-	ADV_MOVE_F,
-	ADV_MOVE_B,
-	ADV_LOCK_F,
-	ADV_LOCK_B,
-	//比赛情况下
+  //调试模式下各状态
+	ADV_FREE,
+	ADV_MOVE_F,	//向前移动
+	ADV_MOVE_B,	//向后移动
+	ADV_LOCK_F,	//前方锁死
+	ADV_LOCK_B,	//后方锁死
+	
+	//比赛情况下各状态
 	ADV_GAME_LAUNCH,
 	ADV_GAME_INIT
 	
 } adv_mode_e;
 
+typedef enum
+//指示推进板前一次运动的方向
+{
+  ADV_DIR_NONE,	//初始化时，无方向
+	ADV_DIR_F,		//向前
+	ADV_DIR_B			//向后
+
+} adv_dir_e;
 typedef struct
 {
     fp32 kp;
@@ -75,6 +85,7 @@ typedef struct
   const RC_ctrl_t *RC_data;               //????'??????????, the point to remote control
   adv_mode_e last_adv_mode;               //state machine. ???????????
 	adv_mode_e adv_mode; 
+	adv_dir_e adv_dir; 
   adv_motor_t motor_data;          //chassis motor data.??????????
 	adv_PID_t adv_angle_pid;
   pid_type_def adv_speed_pid;             //motor speed PID.?????????pid

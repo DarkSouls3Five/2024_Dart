@@ -29,6 +29,7 @@
 #define REDUCTION_GIMBAL 0.2871287f		//ÔÆÌ¨¼õËÙ±È
 #define ECD2ANGLE_GIMBAL  REDUCTION_GIMBAL* 360.0f / ECD_RANGE
 
+
 /* GPIO send and receive ID */
 typedef enum
 {

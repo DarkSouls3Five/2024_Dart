@@ -5,8 +5,8 @@
   * @note       
   * @history
   *  Version    Date            Author          Modification
-  *  V1.0.0     April-12-2023   Ignis             1. done
-  *
+  *  V1.0.0     April-12-2024   Ignis             1. done
+  *	 V1.0.1			April-20-2024   Ignis             1. 修改锁死模式下的控制方式为单位置环，优化移动模式下的pid
   @verbatim
   ==============================================================================
 
@@ -68,6 +68,17 @@ static void trans_set_mode(trans_act_t *trans_act_mode);
   * @retval         none
   */
 static void trans_feedback_update(trans_act_t *trans_act_init);
+/**
+  * @brief          when gimbal mode change, some param should be changed, suan as  yaw_set should be new yaw
+  * @param[out]     mode_change: "gimbal_control" valiable point
+  * @retval         none
+  */
+/**
+  * @brief          横移机构模式改变，有些参数需要改变，例如控制yaw角度设定值应该变成当前yaw角度
+  * @param[out]     mode_change:"gimbal_control"变量指针.
+  * @retval         none
+  */
+static void trans_mode_change_control_transit(trans_act_t *trans_act_transit);
 
 /**
   * @brief          set runner control set-point.
@@ -121,6 +132,7 @@ void translate_task(void const * argument)
     {
 			trans_set_mode(&trans_act);                    //???????????g?
 			trans_feedback_update(&trans_act);            //??????????
+			trans_mode_change_control_transit(&trans_act);
       trans_control_loop(&trans_act,&gimbal_act,&adv_act);
 			vTaskDelay(TRANS_CONTROL_TIME_MS);
 			trans_act.last_trans_mode = trans_act.trans_mode;
@@ -193,7 +205,7 @@ static void trans_set_mode(trans_act_t *trans_act_mode)
 			if(dart_count==1 && adv_act.adv_mode == ADV_FREE)
 			//计数为1说明前两发飞镖发射完毕，ADV_FREE说明推进板复位已完成
 			{
-				if(trans_act_mode->motor_data.trans_motor_measure->given_current > 5000)
+				if(trans_act_mode->motor_data.trans_motor_measure->given_current > 2000)
 				//到达左极限位置，电机堵转，电流增大到一定程度，在左边锁紧
 				{
 					trans_act_mode->trans_mode = TRANS_LOCK_L;	
@@ -224,12 +236,12 @@ static void trans_set_mode(trans_act_t *trans_act_mode)
 			{
 				trans_act_mode->trans_mode = TRANS_MOVE_R;			
 			}
-			else if(trans_act_mode->motor_data.trans_motor_measure->given_current > 5000)
+			else if(trans_act_mode->motor_data.trans_motor_measure->given_current > 2000)
 			//到达左极限位置，电机堵转，电流增大到一定程度，在左边锁紧
 			{
 				trans_act_mode->trans_mode = TRANS_LOCK_L;
 			}	
-			else if(trans_act_mode->motor_data.trans_motor_measure->given_current < -5000)
+			else if(trans_act_mode->motor_data.trans_motor_measure->given_current < -2000)
 			//到达右极限位置，电机堵转，电流增大到一定程度，在右边锁紧
 			{
 				trans_act_mode->trans_mode = TRANS_LOCK_R;
@@ -254,10 +266,42 @@ static void trans_feedback_update(trans_act_t *trans_act_update)
     {
         return;
     }
+		trans_act_update->motor_data.motor_ecd = trans_act_update->motor_data.trans_motor_measure->ecd;//更新电机ecd
 		trans_act_update->motor_data.motor_speed = trans_act_update->motor_data.trans_motor_measure->speed_rpm;
 		last_s_trans = trans_act_update->RC_data->rc.s[1];
 }
 
+/**
+  * @brief          when gimbal mode change, some param should be changed, suan as  yaw_set should be new yaw
+  * @param[out]     mode_change: "gimbal_control" valiable point
+  * @retval         none
+  */
+/**
+  * @brief          横移机构模式改变，有些参数需要改变，例如控制yaw角度设定值应该变成当前yaw角度
+  * @param[out]     mode_change:"gimbal_control"变量指针.
+  * @retval         none
+  */
+static void trans_mode_change_control_transit(trans_act_t *trans_act_transit)
+{
+	if(trans_act_transit == NULL)
+	{
+		return;
+	}
+
+	if(trans_act_transit->trans_mode == TRANS_LOCK_L && 
+		trans_act_transit->last_trans_mode == TRANS_MOVE_L)
+	{
+		trans_act_transit->motor_data.motor_ecd_set = trans_act_transit->motor_data.motor_ecd;
+	}
+	
+	if(trans_act_transit->trans_mode == TRANS_LOCK_R && 
+		trans_act_transit->last_trans_mode == TRANS_MOVE_R)
+	{
+		trans_act_transit->motor_data.motor_ecd_set = trans_act_transit->motor_data.motor_ecd;
+	}
+		
+}
+	
 /**
   * @brief          set runner control set-point.
   * @param[out]     runner_act_control: "runner_act" valiable point
@@ -298,11 +342,12 @@ static void trans_control_loop(trans_act_t *trans_act_control,gimbal_act_t *gimb
 																												trans_act_control->motor_data.motor_speed, trans_act_control->motor_data.motor_speed_set);			
 		}
 		else if (trans_act_control->trans_mode == TRANS_LOCK_L || trans_act_control->trans_mode == TRANS_LOCK_R)
-		//锁死状态
+		//锁死状态，使用角度环单环控制
 		{
-			trans_act_control->motor_data.motor_speed_set = 0;
-			trans_act_control->motor_data.give_current = (int16_t)PID_calc(&trans_act_control->trans_speed_pid, 
-																												trans_act_control->motor_data.motor_speed, trans_act_control->motor_data.motor_speed_set);
+				trans_act_control->motor_data.give_current = trans_PID_calc(&trans_act_control->trans_angle_pid, 
+																											                trans_act_control->motor_data.motor_ecd, 
+																											                trans_act_control->motor_data.motor_ecd_set, 
+																											                trans_act_control->motor_data.motor_speed);
 		}
 	}
 	

@@ -8,21 +8,21 @@
 #define TRANS_TASK_INIT_TIME 300
 #define TRANS_CONTROL_TIME_MS 5
 
-#define TRANS_MOTOR_SPEED_PID_KP 20.0f
+#define TRANS_MOTOR_SPEED_PID_KP 5.0f
 #define TRANS_MOTOR_SPEED_PID_KI 0.0f
-#define TRANS_MOTOR_SPEED_PID_KD -0.1f
+#define TRANS_MOTOR_SPEED_PID_KD -0.05f
 
 #define TRANS_MOTOR_SPEED_PID_MAX_OUT 8000.f
 #define TRANS_MOTOR_SPEED_PID_MAX_IOUT 200.0f
 
-#define TRANS_MOTOR_ANGLE_PID_KP 500.0f//270.0f
-#define TRANS_MOTOR_ANGLE_PID_KI 15.0f
-#define TRANS_MOTOR_ANGLE_PID_KD -0.20f
+#define TRANS_MOTOR_ANGLE_PID_KP 3.0f
+#define TRANS_MOTOR_ANGLE_PID_KI 0.0f
+#define TRANS_MOTOR_ANGLE_PID_KD -0.01f
 
-#define TRANS_MOTOR_ANGLE_PID_MAX_OUT 70.0f
+#define TRANS_MOTOR_ANGLE_PID_MAX_OUT 8000.0f
 #define TRANS_MOTOR_ANGLE_PID_MAX_IOUT 5.0f
 
-#define TRANS_SET_SPEED 500.0f
+#define TRANS_SET_SPEED 600.0f
 
 typedef enum
 {
@@ -62,6 +62,8 @@ typedef struct
   const motor_measure_t *trans_motor_measure;
   fp32 motor_angle;     //rad
   fp32 motor_angle_set; //rad
+	fp32 motor_ecd;     //rad
+  fp32 motor_ecd_set; //rad
   fp32 motor_speed;
 	fp32 motor_speed_set;
   int16_t give_current;
