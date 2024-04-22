@@ -15,27 +15,33 @@
 #define ADV_MOTOR_SPEED_PID_MAX_OUT 8000.f
 #define ADV_MOTOR_SPEED_PID_MAX_IOUT 200.0f
 
-#define ADV_MOTOR_ANGLE_PID_KP 500.0f
-#define ADV_MOTOR_ANGLE_PID_KI 15.0f
-#define ADV_MOTOR_ANGLE_PID_KD -0.20f
+#define ADV_MOTOR_ANGLE_PID_KP 5.0f
+#define ADV_MOTOR_ANGLE_PID_KI 1.0f
+#define ADV_MOTOR_ANGLE_PID_KD -0.30f
 
-#define ADV_MOTOR_ANGLE_PID_MAX_OUT 70.0f
-#define ADV_MOTOR_ANGLE_PID_MAX_IOUT 5.0f
+#define ADV_MOTOR_ANGLE_PID_MAX_OUT 8000.0f
+#define ADV_MOTOR_ANGLE_PID_MAX_IOUT 200.0f
 
 #define ADV_SET_SPEED 7000.0f
+//前安全距离
+#define ADV_SAFE_ANGLE_F 10600.0f
+//后安全距离
+#define ADV_SAFE_ANGLE_B 0.0f
 
 typedef enum
 {
   //调试模式下各状态
 	ADV_FREE,
-	ADV_MOVE_F,	//向前移动
-	ADV_MOVE_B,	//向后移动
-	ADV_LOCK_F,	//前方锁死
-	ADV_LOCK_B,	//后方锁死
+	ADV_MOVE_F,		//向前移动
+	ADV_MOVE_B,		//向后移动
+	ADV_REACH_F,	//前方制动
+	ADV_REACH_B,	//后方制动
+	ADV_LOCK_F,		//前方锁死
+	ADV_LOCK_B,		//后方锁死
 	
 	//比赛情况下各状态
-	ADV_GAME_LAUNCH,
-	ADV_GAME_INIT
+	ADV_GAME_LAUNCH,//发射2枚飞镖
+	ADV_GAME_INIT//自动复位、切镖
 	
 } adv_mode_e;
 
@@ -78,6 +84,7 @@ typedef struct
   fp32 motor_speed;
 	fp32 motor_speed_set;
   int16_t give_current;
+	
 } adv_motor_t;
 
 typedef struct

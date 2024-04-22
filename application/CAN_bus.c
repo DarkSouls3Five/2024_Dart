@@ -38,13 +38,15 @@ static CAN_TxHeaderTypeDef  runner_tx_message;
 static uint8_t              gimbal_can_send_data[8];
 static CAN_TxHeaderTypeDef  gimbal_tx_message;
 
+//计算2006绝对角度
+static void M2006_absolute_position_cal(motor_measure_t *adv_act_absolute);
 
 /*
 motor data,  [byte0:byte1]:servo1, [byte2:byte3]:servo2,
 						[byte4]:gpio1, [byte5]:gpio2, [byte6]:gpio3, [byte7]:gpio4,
 电机数据, [byte0:byte1]:舵机1，[byte2:byte3]:舵机2，
 					[byte4]:gpio1, [byte5]:gpio2, [byte6]:gpio3, [byte7]:gpio4,*/
-static motor_measure_t motor_data[9];
+motor_measure_t motor_data[9];
 
 /**
   * @brief          hal CAN fifo call back, receive gpio data
@@ -153,6 +155,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 				{
 					static uint8_t i = 8;
 					get_motor_measure(&motor_data[i], rx_data);		
+					M2006_absolute_position_cal(&motor_data[i]);
 					//detect_hook(CHASSIS_MOTOR1_TOE + i);					
 					if(count_i == 0)
 					{
@@ -308,4 +311,45 @@ const motor_measure_t *get_motor_measure_point(uint8_t bus, uint16_t id)
 	else
 		return NULL;
 		
+}
+
+/**
+  * @brief          M2006_absolute_position_cal
+  * @param[in]      motor ID
+  * @retval         motor data point
+  */
+/**
+* @brief          计算2006电机绝对角度
+* @param[in]      电机ID
+* @retval         电机数据指针
+  */
+static void M2006_absolute_position_cal(motor_measure_t *motor_2006)
+{
+	if(motor_2006->ecd - motor_2006->last_ecd > 4096)
+	{
+		motor_2006->round --;
+	}
+	else if(motor_2006->ecd - motor_2006->last_ecd < -4096)
+	{
+		motor_2006->round ++;	
+	}
+	
+	motor_2006->distance = (motor_2006->round + (fp32)(motor_2006->ecd-motor_2006->init_ecd)/8192.0f)*360/36;
+}
+
+/**
+  * @brief          M2006_init_ecd
+  * @param[in]      motor ID
+  * @retval         motor data point
+  */
+/**
+* @brief          记录2006电机初始ecd
+* @param[in]      电机ID
+* @retval         电机数据指针
+  */
+void init_ecd_record(motor_measure_t *motor_2006)
+{
+	motor_2006->init_ecd = motor_2006->ecd;
+	if(motor_2006->init_ecd>4096)
+		motor_2006->round ++;
 }

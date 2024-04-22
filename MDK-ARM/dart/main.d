@@ -65,3 +65,4 @@
 .\dart\main.o: ../bsp/boards/bsp_can.h
 .\dart\main.o: ../bsp/boards/bsp_usart.h
 .\dart\main.o: ../bsp/boards/bsp_buzzer.h
+.\dart\main.o: ../application/CAN_bus.h

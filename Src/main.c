@@ -37,6 +37,7 @@
 #include "bsp_can.h"
 #include "bsp_usart.h"
 #include "bsp_buzzer.h"
+#include "CAN_bus.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,6 +59,7 @@
 
 /* USER CODE BEGIN PV */
 
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -66,6 +68,7 @@ void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 void user_delay_us(uint16_t us);
 void user_delay_ms(uint16_t ms); 
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -86,7 +89,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+   HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -117,6 +120,7 @@ int main(void)
     delay_init();
 		remote_control_init();
 		can_filter_init();
+
 //		usart1_tx_dma_init();
 /*
     buzzer_on(1, 30000);

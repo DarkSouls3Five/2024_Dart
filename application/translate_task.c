@@ -191,19 +191,19 @@ static void trans_set_mode(trans_act_t *trans_act_mode)
         return;
     }
 
-		//右拨杆下挡，横移机构自由状态		
+		/*右拨杆下挡，横移机构自由状态*/		
 		if (switch_is_down(trans_act_mode->RC_data->rc.s[0]))  
     {
 			trans_act_mode->trans_mode = TRANS_FREE;
 			dart_count = 0; //down时将发射次数清0
 		}
 		
-		//右拨杆上档，开摩擦轮，比赛中云台手操作模式
+		/*右拨杆上档，开摩擦轮，比赛中云台手操作模式*/
 		else if(switch_is_up(trans_act_mode->RC_data->rc.s[0]))
 		{
 
-			if(dart_count==1 && adv_act.adv_mode == ADV_FREE)
-			//计数为1说明前两发飞镖发射完毕，ADV_FREE说明推进板复位已完成
+			if(dart_count==1 && adv_act.motor_data.adv_motor_measure->distance < 20)
+			//计数为1说明前两发飞镖发射完毕，角度小于20说明推进板复位已完成
 			{
 				if(trans_act_mode->motor_data.trans_motor_measure->given_current > 2000)
 				//到达左极限位置，电机堵转，电流增大到一定程度，在左边锁紧
@@ -217,7 +217,8 @@ static void trans_set_mode(trans_act_t *trans_act_mode)
 				}
 			}
 		}
-		//右拨杆中档，调试模式
+		
+		/*右拨杆中档，调试模式*/
 		else
 		{
 			if (switch_is_up(trans_act_mode->RC_data->rc.s[1]) 
@@ -318,31 +319,35 @@ static void trans_control_loop(trans_act_t *trans_act_control,gimbal_act_t *gimb
 	//
 	static fp32 motor_speed = 0;
 	
+	/*自由状态*/
 	if (trans_act_control->trans_mode == TRANS_FREE)
-	//自由状态
 		{
 			trans_act_control->motor_data.give_current = 0;
 		}
+	
+	
 	else 
 	{
+		/*向右移动状态,左拨杆每上拨一次换一次运动方向*/
 		if (trans_act_control->trans_mode == TRANS_MOVE_R)
-		//向右移动状态,左拨杆每上拨一次换一次运动方向
 		{
 			motor_speed = -TRANS_SET_SPEED;
 			trans_act_control->motor_data.motor_speed_set = motor_speed;
 			trans_act_control->motor_data.give_current = (int16_t)PID_calc(&trans_act_control->trans_speed_pid, 
 																												trans_act_control->motor_data.motor_speed, trans_act_control->motor_data.motor_speed_set);
 		}
+		
+		/*向左移动状态*/
 		else if(trans_act_control->trans_mode == TRANS_MOVE_L)
-		//向左移动状态
 		{
 			motor_speed = TRANS_SET_SPEED;//发送等大反向电流
 			trans_act_control->motor_data.motor_speed_set = motor_speed;
 			trans_act_control->motor_data.give_current = (int16_t)PID_calc(&trans_act_control->trans_speed_pid, 
 																												trans_act_control->motor_data.motor_speed, trans_act_control->motor_data.motor_speed_set);			
 		}
+		
+		/*锁死状态，使用角度环单环控制*/
 		else if (trans_act_control->trans_mode == TRANS_LOCK_L || trans_act_control->trans_mode == TRANS_LOCK_R)
-		//锁死状态，使用角度环单环控制
 		{
 				trans_act_control->motor_data.give_current = trans_PID_calc(&trans_act_control->trans_angle_pid, 
 																											                trans_act_control->motor_data.motor_ecd, 
