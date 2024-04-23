@@ -9,6 +9,7 @@
   *  V1.0.0     Apr-12-2024   	Ignis           1. 基本功能实现
   *  V1.1.0     Apr-15-2024   	Ignis           1. 增加比赛时云台手自动发射模式
   *  V1.1.1     Apr-20-2024   	Ignis           1. 左拨杆中挡可使推板停下
+	*	 V1.1.2			Apr-22-2024			Ignis						1. 丝杆电机控制逻辑修改，改为绝对角度控制
 	* @note  
   ==============================================================================
 	*	赛场上飞镖控制全流程：
@@ -281,11 +282,11 @@ static void adv_set_mode(adv_act_t *adv_act_mode)
 			}
 			
 			//到达前极限位置，电机堵转，电流增大到一定程度，自动锁紧保护			
-			else if(adv_act_mode->motor_data.adv_motor_measure->given_current > 4500 )
+			else if(adv_act_mode->motor_data.adv_motor_measure->given_current > 6000 )
 			{
 				adv_act_mode->adv_mode = ADV_LOCK_F;
 			}	
-			else if(adv_act_mode->motor_data.adv_motor_measure->given_current < -4500 )
+			else if(adv_act_mode->motor_data.adv_motor_measure->given_current < -6000 )
 			//到达后极限位置，电机堵转，电流增大到一定程度，自动锁紧保护
 			{
 				adv_act_mode->adv_mode = ADV_LOCK_B;

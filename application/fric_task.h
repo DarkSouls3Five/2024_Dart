@@ -5,6 +5,7 @@
 #include "pid.h"
 #include "remote_control.h"
 
+
 #define FRIC_TASK_INIT_TIME 357
 #define MAX_3508_CAN_CURRENT 16384.0f
 
@@ -31,12 +32,20 @@
 
 
 //³õËÙ¶È13.5-12.9,6000.0f
-#define FRIC_SET_SPEED 100.0f//6000.0f//7000.0f//7300.0f//7000.0f//5000.0f
+#define FRIC_SET_SPEED 6000.0f//6300.0f//6000.0f//7000.0f//73	00.0f//7000.0f//5000.0f
+#define RELATIVE_SPEED_1 100.0f
+#define RELATIVE_SPEED_2 200.0f
+#define RELATIVE_SPEED_3 300.0f
+#define RELATIVE_SPEED_4 400.0f
 
 typedef enum
 {
   FRIC_ON,
 	FRIC_OFF,
+	FRIC_ON_1,
+	FRIC_ON_2,
+	FRIC_ON_3,
+	FRIC_ON_4,
 	FRIC_READY
 } fric_mode_e;
 

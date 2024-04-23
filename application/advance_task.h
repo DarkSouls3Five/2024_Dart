@@ -113,4 +113,5 @@ typedef struct
   */
 extern void adv_task(void const * argument);
 extern uint8_t get_adv_mode(void);
+
 #endif

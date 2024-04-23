@@ -4,12 +4,14 @@
   * @brief      
   * @note       
   * @history
-  *  Version    Date            Author          Modification
-  *  V1.0.0     Oct-13-2023     Cherryblossomnight              1. done
-  *
+  *  Version    Date            Author         	 					Modification
+  *  V1.0.0     Oct-13-2023     Cherryblossomnight          1. done
+  *	 V1.0.1			Apr-23-2024			Ignis												1.新增摩擦轮转速动态调节，可通过改变.h文件中的
+																														RELATIVE_SPEED参数调节每一发镖对应的转速
   @verbatim
   ==============================================================================
-
+	*
+	*
   ==============================================================================
   @endverbatim
   ****************************(C) COPYRIGHT 2019 DJI****************************
@@ -23,6 +25,8 @@
 #include "remote_control.h"
 #include "stdio.h"
 #include "debug.h"
+#include "advance_task.h"
+
 
 
 /**
@@ -74,6 +78,8 @@ static void fric_feedback_update(fric_act_t *fric_act_update);
 static void fric_control_loop(fric_act_t *fric_act_control);
 
 fric_act_t fric_act;
+extern adv_act_t adv_act;//引用推进机构指针
+extern int dart_count;
 int16_t count_j = 0;
 /**
   * @brief          fric_task
@@ -202,17 +208,46 @@ static void fric_set_mode(fric_act_t *fric_act_mode)
     {
         return;
     }
+		
+		/*右拨杆下挡，摩擦轮关闭*/
     if (switch_is_down(fric_act_mode->RC_data->rc.s[0]))  
     {
 			fric_act_mode->fric_mode = FRIC_OFF;
 		}
+		
+		/*右拨杆中挡，摩擦轮关闭*/
 		else if (switch_is_mid(fric_act_mode->RC_data->rc.s[0]))
 		{
 			fric_act_mode->fric_mode = FRIC_READY;
 		}
+		
+		/*右拨杆上挡，摩擦轮开启*/
 		else if (switch_is_up(fric_act_mode->RC_data->rc.s[0]))
 		{
 			fric_act_mode->fric_mode = FRIC_ON;
+			if(adv_act.adv_mode == ADV_GAME_LAUNCH)
+			{
+				if(adv_act.motor_data.adv_motor_measure->distance <= 6500 && dart_count == 0)
+				//发射第一发飞镖
+				{
+					fric_act_mode->fric_mode = FRIC_ON_1;
+				}
+				else if(adv_act.motor_data.adv_motor_measure->distance > 6500 && dart_count == 0)
+				//发射第二发飞镖
+				{
+					fric_act_mode->fric_mode = FRIC_ON_2;					
+				}
+				else if(adv_act.motor_data.adv_motor_measure->distance <= 6500 && dart_count == 1)
+				//发射第三发飞镖
+				{
+					fric_act_mode->fric_mode = FRIC_ON_3;					
+				}
+				else
+				//发射第四发飞镖
+				{
+					fric_act_mode->fric_mode = FRIC_ON_4;	
+				}
+			}
 		}
 }
 
@@ -263,25 +298,53 @@ static void fric_control_loop(fric_act_t *fric_act_control)
 					fric_act_control->motor_data[i].give_current = (int16_t)PID_calc(&fric_act_control->motor_speed_pid[i], fric_act_control->motor_data[i].speed, fric_act_control->motor_data[i].speed_set);
 				}
 		}
-		else if (fric_act_control->fric_mode == FRIC_ON)
+		else 
 		{
-				motor_speed = FRIC_SET_SPEED;
-				for (uint8_t i = 0; i < 3; i++)
-				{
-					fric_act_control->motor_data[i].speed_set = -motor_speed;
-				}
-				for (uint8_t i = 3; i < 6; i++)
-				{
-					fric_act_control->motor_data[i].speed_set = motor_speed;
-				}
-					for (uint8_t i = 0; i < 6; i++)
+			
+			/*摩擦轮开启，设定转速*/
+			if (fric_act_control->fric_mode == FRIC_ON)
+			//开摩擦轮，原始速度
+			{
+				motor_speed = FRIC_SET_SPEED;					
+			}
+			else if(fric_act_control->fric_mode == FRIC_ON_1)
+			//发射第一发镖，加上相对值1	
+			{
+				motor_speed = FRIC_SET_SPEED + RELATIVE_SPEED_1;	
+			}
+			else if(fric_act_control->fric_mode == FRIC_ON_2)
+			//发射第二发镖，加上相对值2	
+			{
+				motor_speed = FRIC_SET_SPEED + RELATIVE_SPEED_2;					
+			}
+			else if(fric_act_control->fric_mode == FRIC_ON_3)
+			//发射第三发镖，加上相对值3	
+			{
+				motor_speed = FRIC_SET_SPEED + RELATIVE_SPEED_3;					
+			}		
+			else if(fric_act_control->fric_mode == FRIC_ON_4)
+			//发射第四发镖，加上相对值4	
+			{
+				motor_speed = FRIC_SET_SPEED + RELATIVE_SPEED_4;					
+			}
+			
+			/*计算并发送电流*/
+			for (uint8_t i = 0; i < 3; i++)
+			{
+				fric_act_control->motor_data[i].speed_set = -motor_speed;
+			}
+			for (uint8_t i = 3; i < 6; i++)
+			{
+				fric_act_control->motor_data[i].speed_set = motor_speed;
+			}
+			for (uint8_t i = 0; i < 6; i++)
 				{
 						fric_act_control->motor_data[i].give_current = (int16_t)PID_calc(&fric_act_control->motor_speed_pid[i], fric_act_control->motor_data[i].speed, fric_act_control->motor_data[i].speed_set);
 				}
 		}
 		
 	
-		
+		/*发送六个电机的电流*/
 		CAN_cmd_fricl(fric_act_control->motor_data[0].give_current, fric_act_control->motor_data[1].give_current, fric_act_control->motor_data[2].give_current);
 		CAN_cmd_fricr(fric_act_control->motor_data[3].give_current, fric_act_control->motor_data[4].give_current, fric_act_control->motor_data[5].give_current);
 
