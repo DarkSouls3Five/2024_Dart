@@ -89,7 +89,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-   HAL_Init();
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -117,6 +117,8 @@ int main(void)
   MX_USART1_UART_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
+		HAL_TIM_Base_Start(&htim4);
+		HAL_TIM_PWM_Start(&htim4,TIM_CHANNEL_3);
     delay_init();
 		remote_control_init();
 		can_filter_init();

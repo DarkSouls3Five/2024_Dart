@@ -26,6 +26,7 @@
 #include "stdio.h"
 #include "debug.h"
 #include "advance_task.h"
+#include "mode_set_task.h"
 
 
 
@@ -80,6 +81,8 @@ static void fric_control_loop(fric_act_t *fric_act_control);
 fric_act_t fric_act;
 extern adv_act_t adv_act;//引用推进机构指针
 extern int dart_count;
+extern dart_mode_t dart_mode;
+
 int16_t count_j = 0;
 /**
   * @brief          fric_task
@@ -209,46 +212,63 @@ static void fric_set_mode(fric_act_t *fric_act_mode)
         return;
     }
 		
-		/*右拨杆下挡，摩擦轮关闭*/
-    if (switch_is_down(fric_act_mode->RC_data->rc.s[0]))  
-    {
-			fric_act_mode->fric_mode = FRIC_OFF;
-		}
-		
-		/*右拨杆中挡，摩擦轮关闭*/
-		else if (switch_is_mid(fric_act_mode->RC_data->rc.s[0]))
+		/*比赛模式*/
+		if(dart_mode.dart_mode == DART_GAME)
 		{
-			fric_act_mode->fric_mode = FRIC_READY;
-		}
-		
-		/*右拨杆上挡，摩擦轮开启*/
-		else if (switch_is_up(fric_act_mode->RC_data->rc.s[0]))
-		{
-			fric_act_mode->fric_mode = FRIC_ON;
-			if(adv_act.adv_mode == ADV_GAME_LAUNCH)
+			if(adv_act.adv_mode == ADV_GAME_LAUNCH || adv_act.adv_mode == ADV_REACH_F)
 			{
-				if(adv_act.motor_data.adv_motor_measure->distance <= 6500 && dart_count == 0)
-				//发射第一发飞镖
-				{
-					fric_act_mode->fric_mode = FRIC_ON_1;
-				}
-				else if(adv_act.motor_data.adv_motor_measure->distance > 6500 && dart_count == 0)
-				//发射第二发飞镖
-				{
-					fric_act_mode->fric_mode = FRIC_ON_2;					
-				}
-				else if(adv_act.motor_data.adv_motor_measure->distance <= 6500 && dart_count == 1)
-				//发射第三发飞镖
-				{
-					fric_act_mode->fric_mode = FRIC_ON_3;					
-				}
-				else
-				//发射第四发飞镖
-				{
-					fric_act_mode->fric_mode = FRIC_ON_4;	
-				}
+				fric_act_mode->fric_mode = FRIC_ON;
+			}
+			else 
+			{
+				fric_act_mode->fric_mode = FRIC_OFF;				
 			}
 		}
+
+		/*手动模式*/
+		else
+		{
+			/*右拨杆下挡，摩擦轮关闭*/
+			if (switch_is_down(fric_act_mode->RC_data->rc.s[0]))  
+			{
+				fric_act_mode->fric_mode = FRIC_OFF;
+			}
+			
+			/*右拨杆中挡，摩擦轮关闭*/
+			else if (switch_is_mid(fric_act_mode->RC_data->rc.s[0]))
+			{
+				fric_act_mode->fric_mode = FRIC_READY;
+			}
+			
+			/*右拨杆上挡，摩擦轮开启*/
+			else if (switch_is_up(fric_act_mode->RC_data->rc.s[0]))
+			{
+				fric_act_mode->fric_mode = FRIC_ON;
+				if(adv_act.adv_mode == ADV_GAME_LAUNCH)
+				{
+					if(adv_act.motor_data.adv_motor_measure->distance <= 6500 && dart_count == 0)
+					//发射第一发飞镖
+					{
+						fric_act_mode->fric_mode = FRIC_ON_1;
+					}
+					else if(adv_act.motor_data.adv_motor_measure->distance > 6500 && dart_count == 0)
+					//发射第二发飞镖
+					{
+						fric_act_mode->fric_mode = FRIC_ON_2;					
+					}
+					else if(adv_act.motor_data.adv_motor_measure->distance <= 6500 && dart_count == 1)
+					//发射第三发飞镖
+					{
+						fric_act_mode->fric_mode = FRIC_ON_3;					
+					}
+					else
+					//发射第四发飞镖
+					{
+						fric_act_mode->fric_mode = FRIC_ON_4;	
+					}
+				}
+			}
+		}	
 }
 
 /**

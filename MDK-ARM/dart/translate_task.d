@@ -59,3 +59,4 @@
 .\dart\translate_task.o: ../components/algorithm/user_lib.h
 .\dart\translate_task.o: ..\application\gimbal_task.h
 .\dart\translate_task.o: ..\application\advance_task.h
+.\dart\translate_task.o: ..\application\mode_set_task.h

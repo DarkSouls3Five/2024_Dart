@@ -676,6 +676,11 @@
           <GroupName>application</GroupName>
           <Files>
             <File>
+              <FileName>buzzer_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\buzzer_task.c</FilePath>
+            </File>
+            <File>
               <FileName>led_flow_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\led_flow_task.c</FilePath>
@@ -729,6 +734,11 @@
               <FileName>advance_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\advance_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>mode_set_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\mode_set_task.c</FilePath>
             </File>
           </Files>
         </Group>

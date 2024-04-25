@@ -21,6 +21,7 @@
 #include "CAN_bus.h"
 #include "remote_control.h"
 #include "user_lib.h"
+#include "mode_set_task.h"
 
 //消除摇杆微小扰动
 #define rc_deadband_limit(input, output, dealine)        \
@@ -50,6 +51,7 @@
   */
 	
 gimbal_act_t gimbal_act;
+extern dart_mode_t dart_mode;
 void gimbal_task(void const * argument)
 {
 		
@@ -131,7 +133,15 @@ static void gimbal_set_mode(gimbal_act_t *gimbal_act_mode)
     {
         return;
     }
-
+		/*比赛模式，自动锁死*/
+		if(dart_mode.dart_mode == DART_GAME)
+		{
+			gimbal_act_mode->gimbal_mode = GIMBAL_LOCKED;			
+		}
+		
+		/*手动模式，三挡不同控制方式*/
+		else
+		{
 		//进入右拨杆控制Yaw轴调节模式
 			if (switch_is_down(gimbal_act_mode->RC_data->rc.s[0]))  		//右拨杆下档，自由模式
 			{
@@ -145,6 +155,7 @@ static void gimbal_set_mode(gimbal_act_t *gimbal_act_mode)
 			{
 				gimbal_act_mode->gimbal_mode = GIMBAL_LOCKED;
 			}
+		}
 		
 
 

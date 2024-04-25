@@ -59,3 +59,4 @@
 .\dart\fric_task.o: E:\MDK528\ARM\ARMCC\Bin\..\include\stdio.h
 .\dart\fric_task.o: ..\application\debug.h
 .\dart\fric_task.o: ..\application\advance_task.h
+.\dart\fric_task.o: ..\application\mode_set_task.h

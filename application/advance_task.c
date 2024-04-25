@@ -20,26 +20,23 @@
 	*		2、开电，装填初始化:
 	*			连接场地主控 -> 上电 -> 调试模式下（右拨杆中档）控制推进板复位到后端 -> DOWN模式下（右拨杆下挡）下从发射出口将四枚飞镖装填 
 	*		3、调节Yaw轴位置:
-	*			将滑台推进去 -> DOWN模式（右拨杆下挡）下手动调节Yaw轴位置 -> 调试模式下（右拨杆中档）控制横移机构切换到右锁死位置 -> 把遥控器交给云台手
+	*			将滑台推进去 -> DOWN模式（右拨杆下挡）下手动调节Yaw轴位置 -> 右拨杆在下长推1s进入比赛模式 -> 把遥控器交给云台手
 	*
 	*	二、比赛中-云台手
 	*		1、第一次发射:
-	*			(1) 手动流程：选手端选择打开闸门 -> 切到比赛模式（右拨杆上挡），开摩擦轮 -> 闸门完全打开 -> 向前推右摇杆维持1s，发射2枚飞镖
+	*			(1) 手动流程：选手端选择打开闸门 -> 等待闸门完全打开 -> 向前推右摇杆维持1s，发射2枚飞镖
 	*			(2) 自动流程：推进板运动到前极限位置，射出两枚飞镖 -> 推进板复位到后极限位置 -> 横移机构切换到下一组飞镖
-	*			(3)	手动流程：舱门开始关闭时，切到右拨杆中档关掉摩擦轮。
 	*		2、第二次发射：
-	*			(1) 手动流程：选手端选择打开闸门 -> 切到比赛模式（右拨杆上挡），开摩擦轮 -> 闸门完全打开 -> 向前推右摇杆维持1s，发射2枚飞镖
+	*			(1) 手动流程：选手端选择打开闸门 -> 等待闸门完全打开 -> 向前推右摇杆维持1s，发射2枚飞镖
 	*			(2) 自动流程：推进板运动到前极限位置，射出两枚飞镖 -> 停在前极限位置
-	*			(3)	手动流程：舱门开始关闭时，切到右拨杆中档关掉摩擦轮。
 	* 
 	* 三、局间三分钟准备时间
 	*		1、场地人员捡飞镖，同时云台手把遥控器拿给场地人员
-	*		2、复位推进板 -> 装填飞镖 -> 手动调节Yaw轴 -> 切一下down挡清零计数 -> 横移机构切换到右锁死位置 -> 把遥控器交给云台手
+	*		2、右拨杆在下长推1s退出比赛模式 -> 复位推进板 -> 装填飞镖 -> 手动调节Yaw轴 -> 右拨杆在下长推1s进入比赛模式 -> 把遥控器交给云台手
 	
 	##注意事项！！
-	*		1、丝杆的零位是上电时的位置，所以每次上电前务必手动把丝杆转到最后方的位置！！
-	*		2、云台手拿到遥控器以后出了右拨杆切换上挡和中挡、右摇杆前推，不要进行其他任何操作，否则会破坏调节好的状态！
-	*		3、右拨杆由下挡（down）切换到中挡（调试）时，横移机构必须手动切换一次才能进入锁死模式，否则会维持无力状态！
+	*		丝杆的零位是上电时的位置，所以每次上电前务必手动把丝杆转到最后方的位置！！否则有把联轴器撅烂的风险！！务必注意！！
+	*		
 
 	
   ==============================================================================
@@ -58,6 +55,7 @@
 #include "user_lib.h"
 #include "gimbal_task.h"
 #include "translate_task.h"
+#include "mode_set_task.h"
 
 
 //double fabs(double a)
@@ -136,6 +134,7 @@ adv_act_t adv_act;
 extern gimbal_act_t gimbal_act;
 extern trans_act_t trans_act;
 extern motor_measure_t motor_data[9];
+extern dart_mode_t dart_mode;
 int last_s_adv;
 int dart_count = 0;//统计发射次数
 
@@ -225,18 +224,9 @@ static void adv_set_mode(adv_act_t *adv_act_mode)
         return;
     }	
 		
-		
-		/*右拨杆下挡，推进机构自由（自锁）状态*/
-		if (switch_is_down(adv_act_mode->RC_data->rc.s[0]))  
-
-    {
-			adv_act_mode->adv_mode = ADV_FREE;
-		}
-
-		
-		/*右拨杆上档，开摩擦轮，比赛中云台手操作模式，自动装填与发射*/
-		else if(switch_is_up(adv_act_mode->RC_data->rc.s[0]))
-		{	
+		/*比赛模式*/
+		if(dart_mode.dart_mode == DART_GAME)
+		{
 			if (adv_act_mode->RC_data->rc.ch[1] > 600 && (trans_act.trans_mode == TRANS_LOCK_R || trans_act.trans_mode == TRANS_LOCK_L))
 			//横移机构到位，右摇杆前推维持1s，发射两枚飞镖
 			{
@@ -247,50 +237,81 @@ static void adv_set_mode(adv_act_t *adv_act_mode)
 				}
 			}
 			else if(dart_count==1 && adv_act_mode->adv_mode != ADV_FREE && trans_act.trans_mode != TRANS_LOCK_L)
-			//dart_count在LAUNCH模式下会变成1，在down时清零，由0变1代表已经完成两枚飞镖发射，推进板开始自动复位
+			//dart_count在LAUNCH模式下会变成1，由0变1代表已经完成两枚飞镖发射，推进板开始自动复位
 			{
 				adv_act_mode->adv_mode = ADV_GAME_INIT;
 			}
-		}
-	
-		
-		/*右拨杆中挡，手动控制推板运动*/
+		}			
+
+		/*手动模式*/
 		else
 		{
-			//左拨杆中挡，推板停止运动
-			if(switch_is_mid(adv_act_mode->RC_data->rc.s[1]))
+			/*右拨杆下挡，推进机构自由（自锁）状态*/
+			if (switch_is_down(adv_act_mode->RC_data->rc.s[0]))  
+
 			{
-				adv_act_mode->adv_mode = ADV_FREE;				
+				adv_act_mode->adv_mode = ADV_FREE;
 			}
+
 			
-			//下拨一次，且上一次不在后方锁死，上一次运动方向不朝后，推进机构进入后退状态
-			else if (switch_is_down(adv_act_mode->RC_data->rc.s[1]) 
-					&& switch_is_mid(last_s_adv) 
-					&& adv_act_mode->adv_dir != ADV_DIR_B
-					&& adv_act_mode->last_adv_mode != ADV_LOCK_B)
-			{
-				adv_act_mode->adv_mode = ADV_MOVE_B;
+			/*右拨杆上档，开摩擦轮，比赛中云台手操作模式，自动装填与发射*/
+			else if(switch_is_up(adv_act_mode->RC_data->rc.s[0]))
+			{	
+				if (adv_act_mode->RC_data->rc.ch[1] > 600 && (trans_act.trans_mode == TRANS_LOCK_R || trans_act.trans_mode == TRANS_LOCK_L))
+				//横移机构到位，右摇杆前推维持1s，发射两枚飞镖
+				{
+					vTaskDelay(1000);
+					if (adv_act_mode->RC_data->rc.ch[1] > 600)
+					{
+						adv_act_mode->adv_mode = ADV_GAME_LAUNCH;
+					}
+				}
+				else if(dart_count==1 && adv_act_mode->adv_mode != ADV_FREE && trans_act.trans_mode != TRANS_LOCK_L)
+				//dart_count在LAUNCH模式下会变成1，在down时清零，由0变1代表已经完成两枚飞镖发射，推进板开始自动复位
+				{
+					adv_act_mode->adv_mode = ADV_GAME_INIT;
+				}
 			}
+		
 			
-			//再下拨一次，且上一次不在前方锁死，上一次运动方向不朝前，横移机构进入前推状态		
-			else if(switch_is_down(adv_act_mode->RC_data->rc.s[1]) 
-							&& switch_is_mid(last_s_adv) 
-							&& adv_act_mode->adv_dir != ADV_DIR_F
-							&& adv_act_mode->last_adv_mode != ADV_LOCK_F)
+			/*右拨杆中挡，手动控制推板运动*/
+			else
 			{
-				adv_act_mode->adv_mode = ADV_MOVE_F;			
+				//左拨杆中挡，推板停止运动
+				if(switch_is_mid(adv_act_mode->RC_data->rc.s[1]))
+				{
+					adv_act_mode->adv_mode = ADV_FREE;				
+				}
+				
+				//下拨一次，且上一次不在后方锁死，上一次运动方向不朝后，推进机构进入后退状态
+				else if (switch_is_down(adv_act_mode->RC_data->rc.s[1]) 
+						&& switch_is_mid(last_s_adv) 
+						&& adv_act_mode->adv_dir != ADV_DIR_B
+						&& adv_act_mode->last_adv_mode != ADV_LOCK_B)
+				{
+					adv_act_mode->adv_mode = ADV_MOVE_B;
+				}
+				
+				//再下拨一次，且上一次不在前方锁死，上一次运动方向不朝前，横移机构进入前推状态		
+				else if(switch_is_down(adv_act_mode->RC_data->rc.s[1]) 
+								&& switch_is_mid(last_s_adv) 
+								&& adv_act_mode->adv_dir != ADV_DIR_F
+								&& adv_act_mode->last_adv_mode != ADV_LOCK_F)
+				{
+					adv_act_mode->adv_mode = ADV_MOVE_F;			
+				}
+				
+				//到达前极限位置，电机堵转，电流增大到一定程度，自动锁紧保护			
+				else if(adv_act_mode->motor_data.adv_motor_measure->given_current > 6000 )
+				{
+					adv_act_mode->adv_mode = ADV_LOCK_F;
+				}	
+				else if(adv_act_mode->motor_data.adv_motor_measure->given_current < -6000 )
+				//到达后极限位置，电机堵转，电流增大到一定程度，自动锁紧保护
+				{
+					adv_act_mode->adv_mode = ADV_LOCK_B;
+				}	
 			}
-			
-			//到达前极限位置，电机堵转，电流增大到一定程度，自动锁紧保护			
-			else if(adv_act_mode->motor_data.adv_motor_measure->given_current > 6000 )
-			{
-				adv_act_mode->adv_mode = ADV_LOCK_F;
-			}	
-			else if(adv_act_mode->motor_data.adv_motor_measure->given_current < -6000 )
-			//到达后极限位置，电机堵转，电流增大到一定程度，自动锁紧保护
-			{
-				adv_act_mode->adv_mode = ADV_LOCK_B;
-			}	
 		}
 }
 

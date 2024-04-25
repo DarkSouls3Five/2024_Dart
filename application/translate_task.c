@@ -23,6 +23,7 @@
 #include "user_lib.h"
 #include "gimbal_task.h"
 #include "advance_task.h"
+#include "mode_set_task.h"
 
 
 double fabs(double a)
@@ -110,6 +111,7 @@ int last_s_trans; //用于读取上一次左拨杆数据
 extern gimbal_act_t gimbal_act;
 extern adv_act_t adv_act;
 extern int dart_count;//记录飞镖发射次数
+extern dart_mode_t dart_mode;//引用飞镖发射架模式设定指针
 /**
   * @brief          runner_task
   * @param[in]      pvParameters: NULL
@@ -190,20 +192,25 @@ static void trans_set_mode(trans_act_t *trans_act_mode)
     {
         return;
     }
-
-		/*右拨杆下挡，横移机构自由状态*/		
-		if (switch_is_down(trans_act_mode->RC_data->rc.s[0]))  
-    {
-			trans_act_mode->trans_mode = TRANS_FREE;
-			dart_count = 0; //down时将发射次数清0
-		}
 		
-		/*右拨杆上档，开摩擦轮，比赛中云台手操作模式*/
-		else if(switch_is_up(trans_act_mode->RC_data->rc.s[0]))
+		/*比赛模式*/
+		if(dart_mode.dart_mode == DART_GAME)
 		{
-
+			
+			/*计数为0说明刚进入比赛模式，未发射，自动朝右移动并在右边锁死*/
+			if(dart_count==0 && trans_act_mode->motor_data.trans_motor_measure->given_current < -2000)
+			//到达右极限位置，电机堵转，电流增大到一定程度，在右边锁紧
+			{
+				trans_act_mode->trans_mode = TRANS_LOCK_R;
+			}
+			else if(dart_count==0 && trans_act_mode->trans_mode != TRANS_LOCK_R)
+			//若不在右边锁紧，则进入比赛模式的同时自动向右移动并锁死
+			{
+				trans_act_mode->trans_mode = TRANS_MOVE_R;
+			}
+			
+			/*计数为1说明前两发飞镖发射完毕，角度小于20说明推进板复位已完成，横移机构开始自动左移*/
 			if(dart_count==1 && adv_act.motor_data.adv_motor_measure->distance < 20)
-			//计数为1说明前两发飞镖发射完毕，角度小于20说明推进板复位已完成
 			{
 				if(trans_act_mode->motor_data.trans_motor_measure->given_current > 2000)
 				//到达左极限位置，电机堵转，电流增大到一定程度，在左边锁紧
@@ -215,39 +222,70 @@ static void trans_set_mode(trans_act_t *trans_act_mode)
 				{
 					trans_act_mode->trans_mode = TRANS_MOVE_L;	
 				}
-			}
+			}			
 		}
 		
-		/*右拨杆中档，调试模式*/
+		/*手动模式*/
 		else
 		{
-			if (switch_is_up(trans_act_mode->RC_data->rc.s[1]) 
-					&& switch_is_mid(last_s_trans) 
-					&& trans_act_mode->trans_mode != TRANS_MOVE_L 
-					&& trans_act_mode->last_trans_mode != TRANS_LOCK_L )
-			//上拨一次，且上一次不在左边锁死，横移机构进入向左移动状态
+			/*右拨杆下挡，横移机构自由状态*/		
+			if (switch_is_down(trans_act_mode->RC_data->rc.s[0]))  
 			{
-				trans_act_mode->trans_mode = TRANS_MOVE_L;
+				trans_act_mode->trans_mode = TRANS_FREE;
+				dart_count = 0; //down时将发射次数清0
 			}
-			else if(switch_is_up(trans_act_mode->RC_data->rc.s[1]) 
-							&& switch_is_mid(last_s_trans) 
-							&& trans_act_mode->trans_mode != TRANS_MOVE_R 
-							&& trans_act_mode->last_trans_mode != TRANS_LOCK_R)
-			//再上拨一次，且上一次不在右边锁死，横移机构进入向右移动状态
+			
+			/*右拨杆上档，开摩擦轮，比赛中云台手操作模式*/
+			else if(switch_is_up(trans_act_mode->RC_data->rc.s[0]))
 			{
-				trans_act_mode->trans_mode = TRANS_MOVE_R;			
+
+				if(dart_count==1 && adv_act.motor_data.adv_motor_measure->distance < 20)
+				//计数为1说明前两发飞镖发射完毕，角度小于20说明推进板复位已完成
+				{
+					if(trans_act_mode->motor_data.trans_motor_measure->given_current > 2000)
+					//到达左极限位置，电机堵转，电流增大到一定程度，在左边锁紧
+					{
+						trans_act_mode->trans_mode = TRANS_LOCK_L;	
+					}
+					else if(trans_act_mode->trans_mode != TRANS_LOCK_L)
+					//若已在左边锁紧则不会进向左移动模式
+					{
+						trans_act_mode->trans_mode = TRANS_MOVE_L;	
+					}
+				}
 			}
-			else if(trans_act_mode->motor_data.trans_motor_measure->given_current > 2000)
-			//到达左极限位置，电机堵转，电流增大到一定程度，在左边锁紧
+			
+			/*右拨杆中档，调试模式*/
+			else
 			{
-				trans_act_mode->trans_mode = TRANS_LOCK_L;
+				if (switch_is_up(trans_act_mode->RC_data->rc.s[1]) 
+						&& switch_is_mid(last_s_trans) 
+						&& trans_act_mode->trans_mode != TRANS_MOVE_L 
+						&& trans_act_mode->last_trans_mode != TRANS_LOCK_L )
+				//上拨一次，且上一次不在左边锁死，横移机构进入向左移动状态
+				{
+					trans_act_mode->trans_mode = TRANS_MOVE_L;
+				}
+				else if(switch_is_up(trans_act_mode->RC_data->rc.s[1]) 
+								&& switch_is_mid(last_s_trans) 
+								&& trans_act_mode->trans_mode != TRANS_MOVE_R 
+								&& trans_act_mode->last_trans_mode != TRANS_LOCK_R)
+				//再上拨一次，且上一次不在右边锁死，横移机构进入向右移动状态
+				{
+					trans_act_mode->trans_mode = TRANS_MOVE_R;			
+				}
+				else if(trans_act_mode->motor_data.trans_motor_measure->given_current > 2000)
+				//到达左极限位置，电机堵转，电流增大到一定程度，在左边锁紧
+				{
+					trans_act_mode->trans_mode = TRANS_LOCK_L;
+				}	
+				else if(trans_act_mode->motor_data.trans_motor_measure->given_current < -2000)
+				//到达右极限位置，电机堵转，电流增大到一定程度，在右边锁紧
+				{
+					trans_act_mode->trans_mode = TRANS_LOCK_R;
+				}	
 			}	
-			else if(trans_act_mode->motor_data.trans_motor_measure->given_current < -2000)
-			//到达右极限位置，电机堵转，电流增大到一定程度，在右边锁紧
-			{
-				trans_act_mode->trans_mode = TRANS_LOCK_R;
-			}	
-		}	
+		}
 }
 
 /**

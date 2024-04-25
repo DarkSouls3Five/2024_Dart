@@ -57,3 +57,4 @@
 .\dart\gimbal_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 .\dart\gimbal_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 .\dart\gimbal_task.o: ../components/algorithm/user_lib.h
+.\dart\gimbal_task.o: ..\application\mode_set_task.h

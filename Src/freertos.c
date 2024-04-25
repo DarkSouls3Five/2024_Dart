@@ -60,6 +60,8 @@ osThreadId GimbalTaskHandle;
 osThreadId GimbalLockedTasHandle;
 osThreadId TranslateTaskHandle;
 osThreadId AdvanceTaskHandle;
+osThreadId ModeSetTaskHandle;
+osThreadId buzzer_taskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -74,6 +76,8 @@ void gimbal_task(void const * argument);
 void gimbal_locked_task(void const * argument);
 void translate_task(void const * argument);
 void advance_task(void const * argument);
+void mode_set_task(void const * argument);
+void Buzzer_Task(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -167,6 +171,14 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of AdvanceTask */
   osThreadDef(AdvanceTask, advance_task, osPriorityIdle, 0, 128);
   AdvanceTaskHandle = osThreadCreate(osThread(AdvanceTask), NULL);
+
+  /* definition and creation of ModeSetTask */
+  osThreadDef(ModeSetTask, mode_set_task, osPriorityNormal, 0, 128);
+  ModeSetTaskHandle = osThreadCreate(osThread(ModeSetTask), NULL);
+
+  /* definition and creation of buzzer_task */
+  osThreadDef(buzzer_task, Buzzer_Task, osPriorityBelowNormal, 0, 128);
+  buzzer_taskHandle = osThreadCreate(osThread(buzzer_task), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -318,6 +330,42 @@ __weak void advance_task(void const * argument)
     osDelay(1);
   }
   /* USER CODE END advance_task */
+}
+
+/* USER CODE BEGIN Header_mode_set_task */
+/**
+* @brief Function implementing the ModeSetTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_mode_set_task */
+__weak void mode_set_task(void const * argument)
+{
+  /* USER CODE BEGIN mode_set_task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END mode_set_task */
+}
+
+/* USER CODE BEGIN Header_Buzzer_Task */
+/**
+* @brief Function implementing the buzzer_task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Buzzer_Task */
+__weak void Buzzer_Task(void const * argument)
+{
+  /* USER CODE BEGIN Buzzer_Task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END Buzzer_Task */
 }
 
 /* Private application code --------------------------------------------------*/

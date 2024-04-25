@@ -32,16 +32,18 @@
 
 
 //初速度13.5-12.9,6000.0f
-#define FRIC_SET_SPEED 6000.0f//6300.0f//6000.0f//7000.0f//73	00.0f//7000.0f//5000.0f
-#define RELATIVE_SPEED_1 100.0f
-#define RELATIVE_SPEED_2 200.0f
-#define RELATIVE_SPEED_3 300.0f
-#define RELATIVE_SPEED_4 400.0f
+#define FRIC_SET_SPEED 1000.0f//6100.0f//6300.0f//6000.0f//7000.0f//73	00.0f//7000.0f//5000.0f
+#define RELATIVE_SPEED_1 0.0f
+#define RELATIVE_SPEED_2 0.0f
+#define RELATIVE_SPEED_3 0.0f
+#define RELATIVE_SPEED_4 0.0f
 
 typedef enum
 {
   FRIC_ON,
 	FRIC_OFF,
+	
+	//发射不同飞镖，对应不同转速
 	FRIC_ON_1,
 	FRIC_ON_2,
 	FRIC_ON_3,

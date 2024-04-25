@@ -53,3 +53,8 @@
 .\dart\led_flow_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 .\dart\led_flow_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 .\dart\led_flow_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+.\dart\led_flow_task.o: ..\application\mode_set_task.h
+.\dart\led_flow_task.o: ..\application\CAN_bus.h
+.\dart\led_flow_task.o: ../components/controller/pid.h
+.\dart\led_flow_task.o: ..\application\remote_control.h
+.\dart\led_flow_task.o: ../bsp/boards/bsp_rc.h
