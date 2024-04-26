@@ -32,11 +32,11 @@
 
 
 //³õËÙ¶È13.5-12.9,6000.0f
-#define FRIC_SET_SPEED 1000.0f//6100.0f//6300.0f//6000.0f//7000.0f//73	00.0f//7000.0f//5000.0f
+#define FRIC_SET_SPEED 6000.0f//6100.0f//6300.0f//6000.0f//7000.0f//73	00.0f//7000.0f//5000.0f
 #define RELATIVE_SPEED_1 0.0f
-#define RELATIVE_SPEED_2 0.0f
-#define RELATIVE_SPEED_3 0.0f
-#define RELATIVE_SPEED_4 0.0f
+#define RELATIVE_SPEED_2 -200.0f
+#define RELATIVE_SPEED_3 200.0f
+#define RELATIVE_SPEED_4 100.0f
 
 typedef enum
 {

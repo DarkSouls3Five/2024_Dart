@@ -215,9 +215,32 @@ static void fric_set_mode(fric_act_t *fric_act_mode)
 		/*比赛模式*/
 		if(dart_mode.dart_mode == DART_GAME)
 		{
-			if(adv_act.adv_mode == ADV_GAME_LAUNCH || adv_act.adv_mode == ADV_REACH_F)
+			if(adv_act.adv_mode == ADV_GAME_LAUNCH )
 			{
 				fric_act_mode->fric_mode = FRIC_ON;
+				if(adv_act.adv_mode == ADV_GAME_LAUNCH)
+				{
+					if(adv_act.motor_data.adv_motor_measure->distance <= 6500 && dart_count == 0)
+					//发射第一发飞镖
+					{
+						fric_act_mode->fric_mode = FRIC_ON_1;
+					}
+					else if(adv_act.motor_data.adv_motor_measure->distance > 6500 && dart_count == 0)
+					//发射第二发飞镖
+					{
+						fric_act_mode->fric_mode = FRIC_ON_2;					
+					}
+					else if(adv_act.motor_data.adv_motor_measure->distance <= 6500 && dart_count == 1)
+					//发射第三发飞镖
+					{
+						fric_act_mode->fric_mode = FRIC_ON_3;					
+					}
+					else
+					//发射第四发飞镖
+					{
+						fric_act_mode->fric_mode = FRIC_ON_4;	
+					}
+				}
 			}
 			else 
 			{
