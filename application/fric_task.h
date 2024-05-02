@@ -31,12 +31,14 @@
 #define FRIC_RIGHT_PID_MAX_IOUT  5000.0f
 
 
-//初速度13.5-12.9,6000.0f
-#define FRIC_SET_SPEED 6200.0f//6100.0f//6300.0f//6000.0f//7000.0f//73	00.0f//7000.0f//5000.0f
-#define RELATIVE_SPEED_1 100.0f
-#define RELATIVE_SPEED_2 0.0f
-#define RELATIVE_SPEED_3 200.0f
-#define RELATIVE_SPEED_4 125.0f
+//温度约20°，按赛场距离击打前哨站
+#define FRIC_SET_SPEED 6540.0f//6100.0f//6300.0f//6000.0f//7000.0f//73	00.0f//7000.0f//5000.0f
+
+//发射每一发飞镖时的相对转速变化。每制造一发新镖都需要重新测试确定参数
+#define RELATIVE_SPEED_1 130.0f
+#define RELATIVE_SPEED_2 50.0f
+#define RELATIVE_SPEED_3 185.0f
+#define RELATIVE_SPEED_4 115.0f
 
 typedef enum
 {
