@@ -236,7 +236,8 @@ static void adv_set_mode(adv_act_t *adv_act_mode)
 					adv_act_mode->adv_mode = ADV_GAME_LAUNCH;
 				}
 			}
-			else if(dart_count==1 && adv_act_mode->adv_mode != ADV_FREE && trans_act.trans_mode != TRANS_LOCK_L)
+//			else if(dart_count==1 && adv_act_mode->adv_mode != ADV_FREE && trans_act.trans_mode != TRANS_LOCK_L)
+			else if(dart_count==1 && adv_act_mode->adv_mode != ADV_FREE && adv_act_mode->adv_mode == ADV_REACH_F)
 			//dart_count在LAUNCH模式下会变成1，由0变1代表已经完成两枚飞镖发射，推进板开始自动复位
 			{
 				adv_act_mode->adv_mode = ADV_GAME_INIT;
@@ -266,7 +267,8 @@ static void adv_set_mode(adv_act_t *adv_act_mode)
 						adv_act_mode->adv_mode = ADV_GAME_LAUNCH;
 					}
 				}
-				else if(dart_count==1 && adv_act_mode->adv_mode != ADV_FREE && trans_act.trans_mode != TRANS_LOCK_L)
+//				else if(dart_count==1 && adv_act_mode->adv_mode != ADV_FREE && trans_act.trans_mode != TRANS_LOCK_L)
+				else if(dart_count==1 && adv_act_mode->adv_mode != ADV_FREE )				
 				//dart_count在LAUNCH模式下会变成1，在down时清零，由0变1代表已经完成两枚飞镖发射，推进板开始自动复位
 				{
 					adv_act_mode->adv_mode = ADV_GAME_INIT;
@@ -422,12 +424,9 @@ static void adv_control_loop(adv_act_t *adv_act_control)
 			if(adv_act_control->motor_data.adv_motor_measure->distance > ADV_SAFE_ANGLE_F)
 			//到达前安全位置，说明前2枚飞镖发射完成
 			{
-				dart_count = 1 ;				
-				if(trans_act.trans_mode == TRANS_LOCK_L)
-				//如果在左边锁紧，说明四枚飞镖全部发射完成，进入前方制动状态
-				{
-					adv_act_control->adv_mode = ADV_REACH_F;
-				}
+				dart_count = 1 ;			
+				adv_act_control->adv_mode = ADV_REACH_F;
+				
 			}
 		}
 
@@ -443,7 +442,7 @@ static void adv_control_loop(adv_act_t *adv_act_control)
 			if(adv_act_control->motor_data.adv_motor_measure->distance < ADV_SAFE_ANGLE_B + 300.0f)
 			//到达后安全位置，进行后复位
 			{
-				adv_act_control->adv_mode = ADV_REACH_B;
+					adv_act_control->motor_data.give_current =0;
 			}
 		}
 	}

@@ -130,7 +130,7 @@ static void mode_set(dart_mode_t *dart_mode_set)
         return;
     }
 
-		/*右摇杆推到最下维持1s，切换手动模式和比赛模式*/		
+		/*右摇杆推到最下维持1s，进入比赛模式*/		
 		if (dart_mode_set->RC_data->rc.ch[1] < -600)  
     {
 			vTaskDelay(1000);
@@ -142,7 +142,15 @@ static void mode_set(dart_mode_t *dart_mode_set)
 					dart_count=0;//每次进入比赛模式，发射计数清零
 					
 				}
-				else if(dart_mode_set->dart_mode == DART_GAME)
+			}
+		}
+		/*左右摇杆都推到最下维持1s，且右拨杆最下，进入手动模式*/	
+		if (dart_mode_set->RC_data->rc.ch[1] < -600 && dart_mode_set->RC_data->rc.ch[3] < -600 )  
+    {
+			vTaskDelay(1000);
+			if (dart_mode_set->RC_data->rc.ch[1] < -600 && dart_mode_set->RC_data->rc.ch[3] < -600 && switch_is_down(dart_mode_set->RC_data->rc.s[0]) )
+			{
+				if(dart_mode_set->dart_mode == DART_GAME)
 				{
 					dart_mode_set->dart_mode = DART_CONTROL;				
 				}
