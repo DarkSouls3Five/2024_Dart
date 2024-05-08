@@ -210,7 +210,7 @@ static void trans_set_mode(trans_act_t *trans_act_mode)
 			}
 			
 			/*计数为1说明前两发飞镖发射完毕，角度小于20说明推进板复位已完成，横移机构开始自动左移*/
-			if(dart_count==1 && adv_act.motor_data.adv_motor_measure->distance < 20)
+			if(dart_count==1 && adv_act.motor_data.adv_motor_measure->distance < 200)
 			{
 				if(trans_act_mode->motor_data.trans_motor_measure->given_current > 2000)
 				//到达左极限位置，电机堵转，电流增大到一定程度，在左边锁紧
