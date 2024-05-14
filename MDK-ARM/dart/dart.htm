@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\dart\dart.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\dart\dart.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Wed May 08 23:46:55 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Tue May 14 22:05:35 2024
 <BR><P>
 <H3>Maximum Stack Usage =        464 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -231,8 +231,8 @@ Global Symbols
 <P><STRONG><a name="[191]"></a>__rt_lib_shutdown_user_alloc_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$0000000C))
 
 <P><STRONG><a name="[70]"></a>__rt_entry</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry.o(.ARM.Collect$$rtentry$$00000000))
-<BR><BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__main
-<LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload_rt2
+<BR><BR>[Called By]<UL><LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload_rt2
+<LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__main
 </UL>
 
 <P><STRONG><a name="[192]"></a>__rt_entry_presh_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$00000002))
@@ -1596,14 +1596,14 @@ Global Symbols
 <P><STRONG><a name="[10c]"></a>gimbal_rc_control</STRONG> (Thumb, 162 bytes, Stack size 16 bytes, gimbal_task.o(i.gimbal_rc_control))
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = gimbal_rc_control &rArr; __aeabi_dmul
 </UL>
-<BR>[Calls]<UL><LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_PID_calc
+<BR>[Calls]<UL><LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_PID_calc
 <LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
 <LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[10d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
 <LI><a href="#[10f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 <LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
-<LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 </UL>
 <BR>[Called By]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_task
 </UL>
@@ -1682,7 +1682,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
 
-<P><STRONG><a name="[6c]"></a>mode_set_task</STRONG> (Thumb, 144 bytes, Stack size 0 bytes, mode_set_task.o(i.mode_set_task))
+<P><STRONG><a name="[6c]"></a>mode_set_task</STRONG> (Thumb, 140 bytes, Stack size 0 bytes, mode_set_task.o(i.mode_set_task))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = mode_set_task &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_remote_control_point
@@ -2217,9 +2217,9 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[168]"></a>_dadd</STRONG> (Thumb, 332 bytes, Stack size 16 bytes, daddsub_clz.o(x$fpl$dadd), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[169]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dsub1
-<LI><a href="#[16a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_dretinf
+<BR><BR>[Calls]<UL><LI><a href="#[16a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_dretinf
 <LI><a href="#[167]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_dnaninf
+<LI><a href="#[169]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dsub1
 </UL>
 
 <P><STRONG><a name="[10f]"></a>__aeabi_ddiv</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, ddiv.o(x$fpl$ddiv))
@@ -2283,17 +2283,17 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[16a]"></a>__fpl_dretinf</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, dretinf.o(x$fpl$dretinf), UNUSED)
-<BR><BR>[Called By]<UL><LI><a href="#[16d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dmul
+<BR><BR>[Called By]<UL><LI><a href="#[170]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_f2d
+<LI><a href="#[16d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dmul
 <LI><a href="#[16b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_ddiv
 <LI><a href="#[168]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dadd
-<LI><a href="#[170]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_f2d
 </UL>
 
 <P><STRONG><a name="[1a8]"></a>__aeabi_dsub</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, daddsub_clz.o(x$fpl$dsub), UNUSED)
 
 <P><STRONG><a name="[16e]"></a>_dsub</STRONG> (Thumb, 464 bytes, Stack size 32 bytes, daddsub_clz.o(x$fpl$dsub), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[16f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dadd1
-<LI><a href="#[167]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_dnaninf
+<BR><BR>[Calls]<UL><LI><a href="#[167]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_dnaninf
+<LI><a href="#[16f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dadd1
 </UL>
 
 <P><STRONG><a name="[110]"></a>__aeabi_f2d</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, f2d.o(x$fpl$f2d))
@@ -2446,7 +2446,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;adv_control_loop
 </UL>
 
-<P><STRONG><a name="[f4]"></a>adv_control_loop</STRONG> (Thumb, 306 bytes, Stack size 32 bytes, advance_task.o(i.adv_control_loop))
+<P><STRONG><a name="[f4]"></a>adv_control_loop</STRONG> (Thumb, 326 bytes, Stack size 32 bytes, advance_task.o(i.adv_control_loop))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = adv_control_loop &rArr; adv_PID_calc
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;adv_PID_calc
@@ -2460,7 +2460,7 @@ Local Symbols
 <LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;advance_task
 </UL>
 
-<P><STRONG><a name="[f6]"></a>adv_init</STRONG> (Thumb, 136 bytes, Stack size 16 bytes, advance_task.o(i.adv_init))
+<P><STRONG><a name="[f6]"></a>adv_init</STRONG> (Thumb, 132 bytes, Stack size 16 bytes, advance_task.o(i.adv_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = adv_init &rArr; get_motor_measure_point
 </UL>
 <BR>[Calls]<UL><LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;adv_feedback_update
@@ -2472,7 +2472,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;advance_task
 </UL>
 
-<P><STRONG><a name="[fc]"></a>adv_set_mode</STRONG> (Thumb, 228 bytes, Stack size 32 bytes, advance_task.o(i.adv_set_mode))
+<P><STRONG><a name="[fc]"></a>adv_set_mode</STRONG> (Thumb, 234 bytes, Stack size 32 bytes, advance_task.o(i.adv_set_mode))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = adv_set_mode &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay

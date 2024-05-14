@@ -147,7 +147,7 @@ static void mode_set(dart_mode_t *dart_mode_set)
 		/*左右摇杆都推到最下维持1s，且右拨杆最下，进入手动模式*/	
 		if (dart_mode_set->RC_data->rc.ch[1] < -600 && dart_mode_set->RC_data->rc.ch[3] < -600 )  
     {
-			vTaskDelay(1000);
+			vTaskDelay(500);
 			if (dart_mode_set->RC_data->rc.ch[1] < -600 && dart_mode_set->RC_data->rc.ch[3] < -600 && switch_is_down(dart_mode_set->RC_data->rc.s[0]) )
 			{
 				if(dart_mode_set->dart_mode == DART_GAME)

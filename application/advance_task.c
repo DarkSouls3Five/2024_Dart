@@ -227,7 +227,9 @@ static void adv_set_mode(adv_act_t *adv_act_mode)
 		/*比赛模式*/
 		if(dart_mode.dart_mode == DART_GAME)
 		{
-			if (adv_act_mode->RC_data->rc.ch[1] > 600 && (trans_act.trans_mode == TRANS_LOCK_R || trans_act.trans_mode == TRANS_LOCK_L))
+			if (adv_act_mode->RC_data->rc.ch[1] > 600 
+				  && adv_act_mode->adv_mode != ADV_GAME_LAUNCH 
+					&& (trans_act.trans_mode == TRANS_LOCK_R || trans_act.trans_mode == TRANS_LOCK_L))
 			//横移机构到位，右摇杆前推维持1s，发射两枚飞镖
 			{
 				vTaskDelay(1000);
@@ -416,7 +418,14 @@ static void adv_control_loop(adv_act_t *adv_act_control)
 		/*比赛自动发射状态，一次发射2枚飞镖*/
 		else if(adv_act_control->adv_mode == ADV_GAME_LAUNCH)
 		{
-			motor_speed = ADV_SET_SPEED;
+			if(adv_act_control->motor_data.adv_motor_measure->distance < 3000)
+			{
+				motor_speed = ADV_SET_SPEED + 13000;
+			}
+			else
+			{
+				motor_speed = ADV_SET_SPEED;				
+			}
 			adv_act_control->motor_data.motor_speed_set = motor_speed;
 			adv_act_control->motor_data.give_current = (int16_t)PID_calc(&adv_act_control->adv_speed_pid, 
 																												adv_act_control->motor_data.motor_speed, adv_act_control->motor_data.motor_speed_set);

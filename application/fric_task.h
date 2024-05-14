@@ -11,21 +11,21 @@
 #define X3 185.0f
 #define X4 115.0f
 
-#define A0 130.0f
+#define A0 150.0f
 #define B0 0.0f
 #define C0 -25.0f
 #define D0 -125.0f
 
-/*基准转速（温度约20°，按赛场距离击打前哨站）若集体偏差请调节基准转速！*/
+/*基准转速（温度约20°，按赛场距离击打前哨站）若集体出现偏差请调节基准转速！*/
 #define FRIC_SET_SPEED 6270.0f
 //6100.0f//6300.0f//6000.0f//7000.0f//73	00.0f//7000.0f//5000.0f
 
 //发射每一发飞镖时的相对转速变化，请根据实际发射飞镖编号与顺序进行修改
 
-#define RELATIVE_SPEED_1 X1
+#define RELATIVE_SPEED_1 A0
 #define RELATIVE_SPEED_2 X2
-#define RELATIVE_SPEED_3 X3
-#define RELATIVE_SPEED_4 X4
+#define RELATIVE_SPEED_3 C0
+#define RELATIVE_SPEED_4 D0
 
 //#define RELATIVE_SPEED_1 A0
 //#define RELATIVE_SPEED_2 B0
